@@ -1,0 +1,25 @@
+doctype
+html
+  head
+    link(rel='stylesheet', href='../../shared/style.css')
+  body
+    canvas
+    .grid
+      .col.fluid
+        h1 Camera view
+        video(autoplay='autoplay')
+        div
+          button#grab 1 Grab
+        p
+          a(href='?cam=demo') use demo video instead of webcam
+      .col.fluid
+        h1 New badge
+        #badge
+          img#qr(src='#')
+          img#face
+          img(src='badge-backing.png')
+          #nametag
+        button#assemble 2 Assemble
+        button#print 3 Print
+    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='enroll.js')

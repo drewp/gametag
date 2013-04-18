@@ -1,0 +1,15 @@
+doctype
+html
+  head
+    link(rel='stylesheet', type='text/css', href='../../shared/style.css')
+  body
+    h1 admin
+
+    h2 users
+    ol(data-bind="foreach: users")
+      li(data-bind="text: label")
+    
+    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../3rdparty/knockout-2.2.1.js')
+    script(src='../../shared/websocket.js')
+    script(src="page.js")
