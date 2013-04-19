@@ -39,13 +39,26 @@ openMongo (games, users) ->
 
   app.get "/users", (req, res) ->
     users.find().toArray (err, results) ->
+      r.uri = ("/users/" + r._id) for r in results
       res.json(200, {"users":results})
 
   app.post "/users", (req, res) ->
-    users.insert({label: "u"+new Date()}, {safe: true}, (err, objs) ->
+    users.find().sort({_id:-1}).limit(1).toArray (err, highestIdUsers) ->
+      highestIdUsers = [{_id: -1}] if !highestIdUsers.length
+      console.log("high", highestIdUsers)
+      newId = highestIdUsers[0]._id + 1
+      users.insert({label: "u"+newId, _id: newId}, {safe: true}, (err, objs) ->
+        sockets.sendToAll({"event":"userChange"})
+        res.json(200, objs)
+      )
+  
+  app.delete "/users/:id", (req, res) ->
+    users.remove({_id: parseInt(req.params.id)}, (err, removed) ->
       sockets.sendToAll({"event":"userChange"})
-      res.json(200, objs)
+      res.json(200, {})
     )
+
+  # GET /users/:id is what guests will revisit from their own badges later
 
   app.get "/shared/:f", (req, res) ->
     requested = req.params.f

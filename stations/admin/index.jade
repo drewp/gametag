@@ -6,8 +6,13 @@ html
     h1 admin
 
     h2 users
-    ol(data-bind="foreach: users")
-      li(data-bind="text: label")
+    table
+      tbody(data-bind="foreach: users")
+        tr
+          td
+            a(data-bind="attr: {href: uri}, text: label")
+          td
+            button(data-bind="click: $parent.deleteUser") Delete
     
     script(src='../../3rdparty/jquery-1.9.1.min.js')
     script(src='../../3rdparty/knockout-2.2.1.js')
