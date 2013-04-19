@@ -1,0 +1,82 @@
+.rank
+  border-radius 3px
+  display inline-block
+  margin: 1px 3px
+  padding: 0 5px
+  background: #D9E4AC;
+  border: 1px solid #8A9459;
+
+.have
+  color: #000
+  text-shadow: 1px 1px 0 #DFDF5A
+  
+.need
+  color rgba(121, 121, 24, 0.32)
+
+.col.left { -webkit-flex: 2; }
+.col.score { -webkit-flex: 5; }
+.col.right { -webkit-flex: 1; }
+  
+.grid
+  display: -webkit-flex
+  position: absolute
+  left: 0
+  right: 0
+  top: 0
+  bottom: 0px
+  font-size: 25px
+
+  > img
+    position: absolute
+    z-index: -10
+    width: 100%
+    height: 100%
+  
+  .score
+    display: -webkit-flex
+    //border: 2px solid blue
+    -webkit-align-self: center
+    background: rgba(0, 0, 0, 0.47);
+    box-shadow: 0 0 120px #000; 
+      
+    .scanArea
+      -webkit-flex: 0
+      z-index: 2
+        
+      .scan
+        background: #ccc
+        border-radius: 10px
+        -webkit-align-self: stretch
+      
+        img
+          width: 90px
+          height: 90px
+    
+  .scorecardEnvelope
+    z-index: 1
+    -webkit-flex: 1
+    margin-left: -24px;
+    margin: 18px 0;
+    overflow: hidden;
+  
+    .scorecard
+      background: #bbb
+      border-top-right-radius: 10px
+      border-bottom-right-radius: @border-top-right-radius
+      padding: 50px
+      position: relative
+      left: 0px
+      -webkit-animation-duration: 1s;
+      -webkit-animation-name: openDrawer;
+
+
+  .scan
+  .scorecard
+    border: 1px solid white
+    box-shadow: 5px 5px 20px black
+    overflow: hidden
+    text-align: center
+
+@keyframes openDrawer
+  from { left: -600px }
+  to { left: 0px }
