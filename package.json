@@ -12,7 +12,8 @@
       "nodemon" : "0.7.6",
       "connect" : "2.7.4",
       "stylus" : "0.32.1",
-      "websocket" : "1.0.8"
+      "websocket" : "1.0.8",
+      "node-dev": "2.0.1"
   },  
   "engine": {  
     "node": ">=0.10.3"  

@@ -1,5 +1,5 @@
 @help:
-	echo 
+	echo try the 'run_server_with_watch' target
 
 install_js_dependencies:
 	npm install
@@ -10,9 +10,8 @@ install_js_dependencies:
 run_server: server/server.js
 	nodejs server/server.js
 
-server/server.js: server/sockets.js
+run_server_with_watch:
+	# this is not discovering other deps as advertised on https://github.com/fgnass/node-dev
+	node_modules/node-dev/bin/node-dev server/server.coffee
 
-build_all_continuously:
-	#mkdir -p build
-	cd server; ../node_modules/nodefront/nodefront.js serve --compile --live
-	#--output ../build
+server/server.js: server/sockets.js
