@@ -26,6 +26,22 @@ openMongo = (cb) ->
         throw err if err
         cb(games, users)
 
+precompiledName = (requestedName) ->
+  requestedName
+    .replace(".css", ".styl")
+    .replace(".js", ".coffee")
+    .replace(".html", ".jade")
+
+respondFile = (res, prefix, requestedPath) ->
+    if requestedPath == ""
+      requestedPath = "index.html"
+    res.contentType(requestedPath)
+    if requestedPath.match(/\.(jpg|png)$/)
+      # probably res.render could be made to handle this
+      res.sendfile(prefix + precompiledName(requestedPath))
+    else
+      res.render(prefix + precompiledName(requestedPath))
+
 openMongo (games, users) ->
   sockets = new Sockets(server, "/events")
 
@@ -62,23 +78,19 @@ openMongo (games, users) ->
 
   app.get "/shared/:f", (req, res) ->
     requested = req.params.f
-    res.contentType(requested)
-    res.render("./shared/" + requested
-        .replace(".css", ".styl")
-        .replace(".js", ".coffee")
-    )
+    respondFile(res, "./shared/", requested)
 
   app.get "/3rdparty/:f", (req, res) ->
     res.sendfile('./3rdparty/' + req.params.f, {maxAge: 100000000})
 
-  app.get /\/stations\/([^\/]+)\/(.*)/, (req, res) ->
-    sockets.sendToAll({"requested": req.params[0]})
-    if !req.params[1]
-      res.render("./stations/" + req.params[0] + "/index.jade", {})
-    else
-      res.contentType(req.params[1])
-      res.render("./stations/" + req.params[0] + "/" +
-                 req.params[1].replace('.js', '.coffee'), {})
+  # the next segment after /stations/game/ is ignored by this
+  # server, but the browser can use it to differentiate
+
+  app.get(/// /(stations/game/[^/]+/)(.*) ///,
+          (req, res) -> respondFile(res, "stations/game/", req.params[1]))
+  app.get(/// /(stations/[^/]+/)(.*) ///,
+          (req, res) -> respondFile(res, req.params[0], req.params[1]))
+
 
 # this one would be nice on port 80
 server.listen(3200)
