@@ -46,8 +46,19 @@
       .scan
         background: #ccc
         border-radius: 10px
+        overflow: hidden
         -webkit-align-self: stretch
-      
+        position: relative
+        width: 170px
+        height: 230px
+  
+        .mode
+          position: absolute
+          background: #ccc
+        .decodedMode
+          //opacity: .5
+          //-webkit-filter: blur(0px);
+          
         img
           width: 90px
           height: 90px
@@ -66,7 +77,8 @@
       padding: 50px
       position: relative
       left: 0px
-      -webkit-animation-duration: 1s;
+    .scorecardAnim
+      -webkit-animation-duration: .5s;
       -webkit-animation-name: openDrawer;
 
 
@@ -80,3 +92,6 @@
 @keyframes openDrawer
   from { left: -600px }
   to { left: 0px }
+
+.demoButtons
+  position: absolute

@@ -10,16 +10,26 @@ html
       .col.score
         .scanArea
           .scan
-            div Identified
-            div
-              img(src='kablam_Girl_s_face_in_black_frame.png')
-            div username1
-            span.rank Ensign 
-              span.have ⍟
-              span.need ⍟⍟⍟⍟⍟⍟
+            .mode.idleMode
+              div Waiting for badge scan
+            .mode.decodedMode(data-bind="visible: decoded")
+              div Identified
+              div
+                img(src='kablam_Girl_s_face_in_black_frame.png')
+              div username1
+              span.rank Ensign 
+                span.have ⍟
+                span.need ⍟⍟⍟⍟⍟⍟
         .scorecardEnvelope
           .scorecard
             div
               | This game will give you ♆25 and upgrade your rank to
               span.rank Private
       .col.right
+    .demoButtons
+      button(data-bind="click: simUser1") simulate a scan from user1
+    
+    script(src='../../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../../3rdparty/knockout-2.2.1.js')
+    script(src='../../../shared/websocket.js')
+    script(src="page.js")
