@@ -17,7 +17,7 @@ readUsers()
 
 new reconnectingWebSocket("ws://dash:3200/events", (msg) ->
   console.log("msg", msg)
-  if msg.event == "userChange"
+  if msg.event in ["userChange", "userScan"]
     readUsers()
 )
         

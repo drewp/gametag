@@ -13,6 +13,7 @@ app.set('views', __dirname + "/..")
 
 app.use("/static", express.static(__dirname));
 app.use(express.logger())
+app.use(express.bodyParser())
 
 openMongo = (cb) ->
   client = new mongo.Db('gametag',
@@ -55,7 +56,6 @@ openMongo (games, users) ->
 
   app.get "/users", (req, res) ->
     users.find().toArray (err, results) ->
-      r.uri = ("/users/" + r._id) for r in results
       res.json(200, {"users":results})
 
   app.post "/users", (req, res) ->
@@ -63,10 +63,12 @@ openMongo (games, users) ->
       highestIdUsers = [{_id: -1}] if !highestIdUsers.length
       console.log("high", highestIdUsers)
       newId = highestIdUsers[0]._id + 1
-      users.insert({label: "u"+newId, _id: newId}, {safe: true}, (err, objs) ->
+      users.insert({label: "u"+newId, _id: newId, uri: "/users/" + newId}, {safe: true}, (err, objs) ->
         sockets.sendToAll({"event":"userChange"})
         res.json(200, objs)
       )
+
+  # GET /users/:id is what guests will revisit from their own badges later
   
   app.delete "/users/:id", (req, res) ->
     users.remove({_id: parseInt(req.params.id)}, (err, removed) ->
@@ -74,7 +76,15 @@ openMongo (games, users) ->
       res.json(200, {})
     )
 
-  # GET /users/:id is what guests will revisit from their own badges later
+  app.post "/scans", (req, res) ->
+    users.update({uri: req.body.qr},
+                 {$push: {"scans": {game: req.body.game, t: new Date()}}},
+                 {safe: true},
+                 (err, doc) ->
+                   throw err if err
+                   sockets.sendToAll({event: "userScan", game: req.body.game})
+                   res.json(200, doc)
+    )
 
   app.get "/shared/:f", (req, res) ->
     requested = req.params.f
