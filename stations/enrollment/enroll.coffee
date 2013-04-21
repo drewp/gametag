@@ -41,3 +41,18 @@ $("#print").click(() ->
     $("#print").text(origText)
   , 1000)
 )
+
+class Model
+  constructor: ->
+    @decoded = ko.observable(false)
+  makeDemoUser: =>
+    $.post("../../users", {station: "enroll", pic: "pic1", "qr: "/users/1", game: thisGame}, (data) ->
+      console.log("scans", data)
+    )
+
+model = new Model()
+
+new reconnectingWebSocket("ws://dash:3200/events", (msg) ->
+
+)
+ko.applyBindings(model)

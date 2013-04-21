@@ -17,7 +17,7 @@ app.use(express.bodyParser())
 
 openMongo = (cb) ->
   client = new mongo.Db('gametag',
-                        new mongo.Server('bang', 27017),
+                        new mongo.Server('plus', 27017),
                         {w: 1, journal: true, fsync: true})
   client.open (err, _) ->
     throw err if err
@@ -46,6 +46,16 @@ respondFile = (res, prefix, requestedPath) ->
 openMongo (games, users) ->
   sockets = new Sockets(server, "/events")
 
+  newEvent = (type, opts, cb) ->
+    ev = opts.clone()
+    ev.type = type
+    ev.t = new Date()
+    events.insert(ev, {safe: true}, (err) ->
+      throw err if err
+      sockets.sendToAll(ev)
+      cb(null)
+    )
+
   app.get "/", (req, res) ->
     games.find().toArray (err, results) ->
       throw err if err
@@ -63,8 +73,12 @@ openMongo (games, users) ->
       highestIdUsers = [{_id: -1}] if !highestIdUsers.length
       console.log("high", highestIdUsers)
       newId = highestIdUsers[0]._id + 1
-      users.insert({label: "u"+newId, _id: newId, uri: "/users/" + newId}, {safe: true}, (err, objs) ->
-        sockets.sendToAll({"event":"userChange"})
+
+      newEvent("enroll",
+               {pic: "pic1", user: "/users/" + newId, label:  "u"+newId},
+               (err) ->
+                 throw err if err
+                 sockets.sendToAll({"event":"enroll"})
         res.json(200, objs)
       )
 
