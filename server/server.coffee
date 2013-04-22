@@ -5,6 +5,9 @@ mime = require('connect').mime
 app = express()
 server = require("http").createServer(app)
 Sockets = require("./sockets.js").Sockets
+_ = require("../3rdparty/underscore-1.4.4-min.js")
+Events = require("./events.js").Events
+
 
 app.engine("jade", build.jade)
 app.engine("styl", build.stylus)
@@ -17,7 +20,7 @@ app.use(express.bodyParser())
 
 openMongo = (cb) ->
   client = new mongo.Db('gametag',
-                        new mongo.Server('plus', 27017),
+                        new mongo.Server('bang', 27017),
                         {w: 1, journal: true, fsync: true})
   client.open (err, _) ->
     throw err if err
@@ -25,7 +28,9 @@ openMongo = (cb) ->
       throw err if err
       client.collection 'users', (err, users) ->
         throw err if err
-        cb(games, users)
+        client.collection 'events', (err, events) ->
+          throw err if err
+          cb(games, users, events)
 
 precompiledName = (requestedName) ->
   requestedName
@@ -43,18 +48,15 @@ respondFile = (res, prefix, requestedPath) ->
     else
       res.render(prefix + precompiledName(requestedPath))
 
-openMongo (games, users) ->
+openMongo (games, users, events) ->
   sockets = new Sockets(server, "/events")
 
-  newEvent = (type, opts, cb) ->
-    ev = opts.clone()
-    ev.type = type
-    ev.t = new Date()
-    events.insert(ev, {safe: true}, (err) ->
-      throw err if err
-      sockets.sendToAll(ev)
-      cb(null)
-    )
+  e = new Events(app, events, sockets)
+  e.addRequestHandlers()
+
+  nextUserId = (cb) ->
+    # this doesn't care about whether events were cancelled
+    events.find({type: "enroll"}).count(cb)
 
   app.get "/", (req, res) ->
     games.find().toArray (err, results) ->
@@ -65,31 +67,23 @@ openMongo (games, users) ->
       })
 
   app.get "/users", (req, res) ->
+    #todo
     users.find().toArray (err, results) ->
       res.json(200, {"users":results})
 
   app.post "/users", (req, res) ->
-    users.find().sort({_id:-1}).limit(1).toArray (err, highestIdUsers) ->
-      highestIdUsers = [{_id: -1}] if !highestIdUsers.length
-      console.log("high", highestIdUsers)
-      newId = highestIdUsers[0]._id + 1
-
+    nextUserId((err, newId) ->
       newEvent("enroll",
-               {pic: "pic1", user: "/users/" + newId, label:  "u"+newId},
-               (err) ->
+               {pic: "pic1", user: "/users/" + newId, label: "u"+newId},
+               (err, ev) ->
                  throw err if err
                  sockets.sendToAll({"event":"enroll"})
-        res.json(200, objs)
+                 res.json(200, ev)
       )
+    )
 
   # GET /users/:id is what guests will revisit from their own badges later
   
-  app.delete "/users/:id", (req, res) ->
-    users.remove({_id: parseInt(req.params.id)}, (err, removed) ->
-      sockets.sendToAll({"event":"userChange"})
-      res.json(200, {})
-    )
-
   app.post "/scans", (req, res) ->
     users.update({uri: req.body.qr},
                  {$push: {"scans": {game: req.body.game, t: new Date()}}},
@@ -109,7 +103,6 @@ openMongo (games, users) ->
 
   # the next segment after /stations/game/ is ignored by this
   # server, but the browser can use it to differentiate
-
   app.get(/// /(stations/game/[^/]+/)(.*) ///,
           (req, res) -> respondFile(res, "stations/game/", req.params[1]))
   app.get(/// /(stations/[^/]+/)(.*) ///,

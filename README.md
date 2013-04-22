@@ -17,7 +17,7 @@ badger
 Schema 2
 --------
 
-events (all have time t and station uri and cancelled=false):
+events (all have time t, source station uri, and cancelled=false):
 
   {type: savePic, uri: pic}
   {type: enroll, pic: uri, user: uri, label: l}

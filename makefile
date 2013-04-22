@@ -14,4 +14,4 @@ run_server_with_watch:
 	# this is not discovering other deps as advertised on https://github.com/fgnass/node-dev
 	node_modules/node-dev/bin/node-dev server/server.coffee
 
-server/server.js: server/sockets.js
+server/server.js: server/sockets.js server/events.js
