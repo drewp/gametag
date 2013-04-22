@@ -1,5 +1,5 @@
 model =
-  users: ko.observableArray([])
+  events: ko.observableArray([])
   deleteUser: (user) =>
     $.ajax(
       url: user.uri
@@ -7,18 +7,33 @@ model =
       success: () ->
         console.log("del")
     )
+  prettyTime: (ev) ->
+    window.t = ev.t
+    new Date(ev.t).toLocaleTimeString()
+  eventSpecific: (ev) ->
+    _.omit(ev, ['_id', 'type', 't', 'uri', 'cancelled'])
+  toggleCancelEvent: (ev) ->
+    if !ev.cancelled # note: works off our copy, not the real event state
+      $.ajax(
+        url: ev.uri
+        type: "DELETE"
+      )
+    else
+      $.ajax(
+        url: ev.uri
+        type: "PATCH"
+        data: JSON.stringify({cancelled: false}),
+        contentType: 'application/json',
+      )
 
-readUsers = ->
-  $.getJSON "../../users", {}, (data) ->
-    model.users(data.users)
-readUsers()
-
-
+readEvents = ->
+  $.getJSON "../../events/all", {}, (data) ->
+    model.events(data.events)
+readEvents()
 
 new reconnectingWebSocket("ws://dash:3200/events", (msg) ->
   console.log("msg", msg)
-  if msg.event in ["userChange", "userScan"]
-    readUsers()
+  readEvents()
 )
         
 ko.applyBindings(model)

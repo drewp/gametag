@@ -2,21 +2,35 @@ doctype
 html
   head
     link(rel='stylesheet', type='text/css', href='../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='style.css')
   body
     h1 admin
 
-    h2 users
+    h2 events
     table
-      tbody(data-bind="foreach: users")
+      thead
         tr
+          th Time
+          th Event type
+          th
+      tbody(data-bind="foreach: events")
+        tr(data-bind="css: {cancelled: cancelled}")
           td
-            a(data-bind="attr: {href: uri}, text: label")
+            a(data-bind="attr: {href: uri}, text: $parent.prettyTime($data)")
+          td(data-bind="text: type")
+          td(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
           td
-            button(data-bind="click: $parent.deleteUser") Delete
-          td
-            span(data-bind="text: JSON.stringify($data)")
+            // draw this differently if we're already cancelled
+            button(data-bind="click: $parent.toggleCancelEvent")
+              // ko if: cancelled
+              | Uncancel
+              // /ko
+              // ko if: !cancelled
+              | Cancel
+              // /ko
     
     script(src='../../3rdparty/jquery-1.9.1.min.js')
     script(src='../../3rdparty/knockout-2.2.1.js')
+    script(src='../../3rdparty/underscore-1.4.4-min.js')
     script(src='../../shared/websocket.js')
     script(src="page.js")
