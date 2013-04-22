@@ -46,7 +46,7 @@ class Model
   constructor: ->
     @decoded = ko.observable(false)
   makeDemoUser: =>
-    $.post("../../users", {station: "enroll", pic: "pic1", "qr: "/users/1", game: thisGame}, (data) ->
+    $.post("../../users", {station: "enroll", pic: "pic1"}, (data) ->
       console.log("scans", data)
     )
 
