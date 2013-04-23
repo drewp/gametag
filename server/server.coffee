@@ -52,7 +52,11 @@ openMongo (games, users, events) ->
   sockets = new Sockets(server, "/events")
 
   e = new Events(app, events, sockets)
+
   e.addRequestHandlers()
+
+  app.get "/events/all", (req, res) ->
+    e.getAllEvents((events) -> res.json(200, {events: events}))
 
   nextUserId = (cb) ->
     # this doesn't care about whether events were cancelled
