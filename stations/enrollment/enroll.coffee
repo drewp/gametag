@@ -52,7 +52,7 @@ class Model
 
 model = new Model()
 
-new reconnectingWebSocket("ws://dash:3200/events", (msg) ->
+new reconnectingWebSocket(socketRoot + "/events", (msg) ->
 
 )
 ko.applyBindings(model)

@@ -78,7 +78,7 @@ openMongo (games, users, events) ->
 
   app.post "/users", (req, res) ->
     nextUserId((err, newId) ->
-      newEvent("enroll",
+      e.newEvent("enroll",
                {pic: "pic1", user: "/users/" + newId, label: "u"+newId},
                (err, ev) ->
                  throw err if err
