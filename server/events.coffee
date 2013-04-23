@@ -1,14 +1,14 @@
 _ = require("../3rdparty/underscore-1.4.4-min.js")
 mongo = require("mongodb")
 
-eventUriFromId = (_id) ->
-  '/events/' + _id # wrong abs uri
-
 exports.Events = (app, events, sockets) ->
   self = this
   @app = app
   @events = events
   @sockets = sockets
+
+  eventUriFromId = (_id) ->
+    '/events/' + _id # wrong abs uri
 
   @newEvent = (type, opts, cb) =>
     # callback gets the complete event, with type and t included
