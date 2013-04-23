@@ -1,4 +1,5 @@
 window.reconnectingWebSocket = (url, onMessage) ->
+  pong = 0
   connect = ->
     ws = new WebSocket(url)
     ws.onopen = ->
@@ -9,7 +10,7 @@ window.reconnectingWebSocket = (url, onMessage) ->
 
     ws.onclose = ->
       pong = 1 - pong
-      $("#status").text "disconnected (retrying " + ((if pong then "<U+1F63C>" else "<U+1F63A>")) + ")"
+      $("#status").text "disconnected (retrying " + ((if pong then "/" else "\\")) + ")"
       
       # this should be under a requestAnimationFrame to
       # save resources
@@ -17,5 +18,4 @@ window.reconnectingWebSocket = (url, onMessage) ->
 
     ws.onmessage = (evt) ->
       onMessage JSON.parse(evt.data)
-  pong = 0
   connect()
