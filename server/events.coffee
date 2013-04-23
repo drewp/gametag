@@ -35,10 +35,15 @@ exports.Events = (app, events, sockets) ->
     self.app.delete "/events/:id", (req, res) ->
       events.update({_id: mongo.ObjectID(req.params.id)}, {$set: {cancelled: true}}, (err) ->
         newEvent("cancel",
-                 {target: eventUriFromId(req.params.id), now: true}, 
+                 {target: eventUriFromId(req.params.id), setTo: true}, 
                  (err) ->
                    res.send(204)
         )
+      )
+
+    self.app.post "/events", (req, res) ->
+      newEvent(req.body.type, _.omit(req.body, "type"), (err, ev) ->
+        res.send(204)
       )
 
     self.app.patch "/events/:id", (req, res) ->

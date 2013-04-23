@@ -69,6 +69,7 @@ openMongo (games, users, events) ->
         title: "Consolidate.js",
         games: results
       })
+  app.get "/page.js", (req, res) -> respondFile(res, 'stations/proto/', 'page.js')
 
   app.get "/users", (req, res) ->
     #todo

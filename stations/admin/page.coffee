@@ -31,7 +31,7 @@ readEvents = ->
     model.events(data.events)
 readEvents()
 
-new reconnectingWebSocket("ws://dash:3200/events", (msg) ->
+new reconnectingWebSocket(socketRoot + "/events", (msg) ->
   console.log("msg", msg)
   readEvents()
 )
