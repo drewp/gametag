@@ -7,10 +7,14 @@ html
     h1 Screen setup
     p Set this screen to be:
     li: a(href='/stations/enrollment/') enrollment station
-    li: a(href='http://dash:3202/') scoreboard station
-    li: a(href='http://dash:3203/') prize station
+    li: a(href='/stations/scoreboard/') scoreboard station
+    li: a(href='/stations/prize/') prize station
     li: a(href='/stations/admin/') admin station
     each g in locals.games
       li: a(href=g.uri)= g.label
 
-
+    p#status
+    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../shared/websocket.js')
+    script(src='../../shared/netconfig.js')
+    script(src="page.js")
