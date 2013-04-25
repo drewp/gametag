@@ -20,15 +20,33 @@ else
 
 $("#grab").click(() ->
   ctx.drawImage(video, 0, 0)
-  $("#face")[0].src = canvas.toDataURL('image/webp')
+  $("#face").attr("xlink:href", canvas.toDataURL('image/jpg'))
       
 )
 $("video").click(-> $("#grab").click())
 
+$.ajax
+  url: "badge.svg",
+  dataType: "text",
+  success: (data) ->
+    $("#badge").html(data)
+
 $("#assemble").click(() ->
-  n = ["Endburo", "Tasgar", "Serit", "Tonumo", "Achath", "Itutan", "Endline", "Unda", "Vesaunt", "Rodundem"][Math.floor(Math.random() * 10)]
-  $("#nametag").text(n + " #" + Math.floor(Math.random() * 99999));
-  $("#qr").attr('src', 'qr-demo.png')
+      n = ["Endburo", "Tasgar", "Serit", "Tonumo", "Achath", "Itutan", "Endline", "Unda", "Vesaunt", "Rodundem"][Math.floor(Math.random() * 10)]
+      $("#name1, #name2").text(n + " #" + Math.floor(Math.random() * 99999));
+
+      i = document.createElement("div")
+      q = new QRCode(i, {
+        text: "http://what",
+        width: 128,
+        height: 128
+      })
+      q.makeImage()
+      
+      $("body").append(i)
+      $("#qr").attr('xlink:href', i.children[1].getAttribute("src"))
+
+      svgOut = new XMLSerializer().serializeToString($("#badge")[0])
 )
 
 $("#print").click(() ->
