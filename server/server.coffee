@@ -12,6 +12,7 @@ Events = require("./events.js").Events
 app.engine("jade", build.jade)
 app.engine("styl", build.stylus)
 app.engine("coffee", build.coffee)
+
 app.set('views', __dirname + "/..")
 
 app.use("/static", express.static(__dirname));
@@ -42,7 +43,7 @@ respondFile = (res, prefix, requestedPath) ->
     if requestedPath == ""
       requestedPath = "index.html"
     res.contentType(requestedPath)
-    if requestedPath.match(/\.(jpg|png)$/)
+    if requestedPath.match(/\.(jpg|png|webm|svg)$/)
       # probably res.render could be made to handle this
       res.sendfile(prefix + precompiledName(requestedPath))
     else
@@ -103,8 +104,8 @@ openMongo (games, users, events) ->
     requested = req.params.f
     respondFile(res, "./shared/", requested)
 
-  app.get "/3rdparty/:f", (req, res) ->
-    res.sendfile('./3rdparty/' + req.params.f, {maxAge: 100000000})
+  app.get /// /3rdparty/(.*) ///, (req, res) ->
+    res.sendfile('./3rdparty/' + req.params[0], {maxAge: 100000000})
 
   # the next segment after /stations/game/ is ignored by this
   # server, but the browser can use it to differentiate
