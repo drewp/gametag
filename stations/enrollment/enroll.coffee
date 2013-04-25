@@ -31,20 +31,25 @@ $.ajax
   success: (data) ->
     $("#badge").html(data)
 
+
+getQrImageUrl = (text) ->
+  i = document.createElement("div")
+  q = new QRCode(i, {
+    text: text,
+    width: 128,
+    height: 128
+  })
+  q.makeImage()
+  i.children[1].getAttribute("src")
+
+qrElem = $($("#qr")[0])
+qrElem.attr("xlink:href", "#")
+
 $("#assemble").click(() ->
       n = ["Endburo", "Tasgar", "Serit", "Tonumo", "Achath", "Itutan", "Endline", "Unda", "Vesaunt", "Rodundem"][Math.floor(Math.random() * 10)]
       $("#name1, #name2").text(n + " #" + Math.floor(Math.random() * 99999));
-
-      i = document.createElement("div")
-      q = new QRCode(i, {
-        text: "http://what",
-        width: 128,
-        height: 128
-      })
-      q.makeImage()
       
-      $("body").append(i)
-      $("#qr").attr('xlink:href', i.children[1].getAttribute("src"))
+      qrElem.attr('xlink:href', getQrImageUrl("https://gametag.bigast.com/user/125"))
 
       svgOut = new XMLSerializer().serializeToString($("#badge")[0])
 )
