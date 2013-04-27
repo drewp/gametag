@@ -1,8 +1,40 @@
 doctype
 html
   head
-    link(rel='stylesheet', href='style.css')
+    link(rel='stylesheet', type='text/css', href='../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    link(rel='stylesheet', type='text/css', href='style.css')
   body
-    h1 scoreboard
-    script(src='lib/jquery-1.9.1.min.js')
 
+    h1
+      | Top
+      | 
+      span(data-bind="text: maxTopUsers")
+      |  Scores
+    table.scoreColumns
+      tr(data-bind="foreach: _.range(numColumns)")
+        td
+          table.scores
+            thead
+              tr
+                th 
+                th played
+                th points
+            tbody(data-bind="foreach: _.values(_.pick($parent.users(), _.range($data, $parent.users().length, $root.numColumns)))")
+              tr
+                td
+                  img(width="64", height="64", data-bind="attr: {src: pic}")
+                  div(data-bind="text: user")
+                td
+                  span(data-bind="text: games")
+                td
+                  span(data-bind="text: points")
+
+    p#status
+    
+    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../3rdparty/knockout-2.2.1.js')
+    script(src='../../3rdparty/underscore-1.4.4-min.js')
+    script(src='../../shared/websocket.js')
+    script(src='../../shared/netconfig.js')
+    script(src="page.js")
