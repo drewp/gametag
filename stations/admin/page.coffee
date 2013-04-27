@@ -18,6 +18,7 @@ model =
         enroll: 'icon-user'
         scan: 'icon-play-circle'
         cancel: 'icon-ban-circle'
+        pic: 'icon-camera'
     }[ev.type]
   eventRowClasses: (ev) ->
     ret = {cancelled: ev.cancelled, isNewDay: ev.isNewDay}
