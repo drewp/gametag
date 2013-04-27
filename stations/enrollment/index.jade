@@ -14,7 +14,7 @@ html
         div.scannerArea
           video(autoplay='autoplay', data-bind="click: grab")
           .scanner
-        
+
         div
           button(data-bind="click: grab, enable: grabEnabled")
             | 
@@ -45,6 +45,7 @@ html
     script(src='../../3rdparty/jquery-1.9.1.min.js')
     script(src='../../../3rdparty/knockout-2.2.1.js')
     script(src='../../../3rdparty/davidshimjs-qrcodejs-a413bc3/qrcode.min.js')
+    script(src='../../../3rdparty/canvas-to-blob.js')
     script(src='../../../shared/websocket.js')
     script(src='../../shared/netconfig.js')
     script(src='enroll.js')

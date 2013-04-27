@@ -1,5 +1,6 @@
 model =
   events: ko.observableArray([])
+
   deleteUser: (user) =>
     $.ajax(
       url: user.uri
@@ -7,11 +8,14 @@ model =
       success: () ->
         console.log("del")
     )
+
   prettyTime: (ev) ->
     window.t = ev.t
     new Date(ev.t).toLocaleTimeString()
+
   eventSpecific: (ev) ->
     _.omit(ev, ['_id', 'type', 't', 'uri', 'cancelled', 'isNewDay'])
+
   iconClass: (ev) ->
     {
         # see http://fortawesome.github.io/Font-Awesome/design.html
@@ -20,6 +24,7 @@ model =
         cancel: 'icon-ban-circle'
         pic: 'icon-camera'
     }[ev.type]
+
   eventRowClasses: (ev) ->
     ret = {cancelled: ev.cancelled, isNewDay: ev.isNewDay}
     ret[ev.type] = true
@@ -46,6 +51,7 @@ readEvents()
 
 new reconnectingWebSocket(socketRoot + "/events", (msg) ->
   console.log("msg", msg)
+  # this wants to be incremental and insert the new event on the top
   readEvents()
 )
         

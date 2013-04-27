@@ -1,4 +1,7 @@
 class Camera
+  # camera view, including the ability to save pics to the server and
+  # prepare them for use in the SVG
+
   constructor: (demoMode, picCopying) ->
     @picCopying = picCopying
     @canvas = document.querySelector('canvas')
@@ -14,6 +17,8 @@ class Camera
         @video.src = window.URL.createObjectURL(localMediaStream)
       ), (e) ->
         console.log("cam failed", e)
+        @video.src = "booth.webm"
+        @video.loop = true
       )
       $(@video).css({width: 320, height: 240})
     else
@@ -38,17 +43,22 @@ class Camera
       setTimeout(() => 
         @ctx.drawImage(@video, 0, 0)
         @video.play()
-        image = @canvas.toDataURL('image/jpeg')
-        onPicData(image)
-        $.ajax(
-          type: "POST"
-          url: "../../pic"
-          contentType: "image/jpeg"
-          data: atob(image.replace(/^[^,]*,/, ""))
-          success: (newPic) =>
-            onPicUri(newPic.pic)
-            @picCopying(false)
-        )
+
+        imageDataUrl = @canvas.toDataURL('image/jpeg')
+        onPicData(imageDataUrl)
+
+        onBlob = (blob) =>
+          $.ajax(
+            type: "POST"
+            url: "../../pic"
+            contentType: "image/jpeg"
+            processData: false
+            data: blob,
+            success: (newPic) =>
+              onPicUri(newPic.pic)
+              @picCopying(false)
+          )
+        @canvas.toBlob(onBlob, "image/jpeg")
       , 10)
     , effectMs)
 
@@ -142,8 +152,8 @@ class Model
     camera.grab(badge.setPic, @currentPicUri)
 
   reset: =>
-    $("#nametag").text("")
     @currentUserUri(null)
+    badge.setName("")
     badge.setPic(null)
     @currentPicUri(null)
     $("#print").text("Print")
@@ -162,9 +172,9 @@ class Model
 
   makeUser: =>
     n = ["Endburo", "Tasgar", "Serit", "Tonumo", "Achath", "Itutan", "Endline", "Unda", "Vesaunt", "Rodundem"][Math.floor(Math.random() * 10)]
-    badge.setName(n + " #" + Math.floor(Math.random() * 99999))
+    badge.setName(n)
 
-    $.post("../../users", {station: "enroll", pic: @currentPicUri()}, (data) =>
+    $.post("../../users", {station: "enroll", label: n, pic: @currentPicUri()}, (data) =>
       @currentUserUri("https://gametag.bigast.com"+data.user)
     )
 

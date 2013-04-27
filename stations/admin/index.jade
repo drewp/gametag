@@ -22,7 +22,10 @@ html
           td.eventType
             i(data-bind="attr: {'class': $parent.iconClass($data)}")
             span(data-bind="text: type")
-          td(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
+          td
+            span(data-bind="with: pic")
+              img#thumb(data-bind="attr: {src: $data}")
+            span(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
           td
             // draw this differently if we're already cancelled
             button(data-bind="click: $parent.toggleCancelEvent")

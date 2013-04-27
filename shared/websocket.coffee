@@ -1,4 +1,6 @@
 window.reconnectingWebSocket = (url, onMessage) ->
+         # also needs onConnect that pages can use to backfill the events
+         # they care about
   pong = 0
   connect = ->
     ws = new WebSocket(url)

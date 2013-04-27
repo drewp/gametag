@@ -81,7 +81,7 @@ openMongo (games, users, events) ->
   app.post "/users", (req, res) ->
     nextUserId((err, newId) ->
       e.newEvent("enroll",
-               {pic: req.body.pic, user: "/users/" + newId, label: "u"+newId},
+               {pic: req.body.pic, user: "/users/" + newId, label: req.body.label},
                (err, ev) ->
                  throw err if err
                  sockets.sendToAll({"event":"enroll"})
@@ -105,18 +105,23 @@ openMongo (games, users, events) ->
     # POST a jpeg image and get back a copy of the event that
     # announces your new pic.
     outBasename = (+new Date())+".jpg"
+
     out = fs.createWriteStream("pic/"+outBasename)
-    req.on('data', (ch) -> out.write(ch))
+    req.pipe(out)
     req.on('end', () ->
-        out.close()
         e.newEvent("pic", {"pic": "/pic/"+outBasename}, (err, ev) ->
           res.json(200, ev)
         )
     )
 
+  app.get "/pic/:f", (req, res) ->
+    respondFile(res, "./pic/", req.params.f)
+
+  app.post "/print", (req, res) ->
+    
+
   app.get "/shared/:f", (req, res) ->
-    requested = req.params.f
-    respondFile(res, "./shared/", requested)
+    respondFile(res, "./shared/", req.params.f)
 
   app.get /// /3rdparty/(.*) ///, (req, res) ->
     res.sendfile('./3rdparty/' + req.params[0], {maxAge: 100000000})
