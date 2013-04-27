@@ -1,11 +1,11 @@
 class Camera
-  constructor: (picCopying) ->
+  constructor: (demoMode, picCopying) ->
     @picCopying = picCopying
     @canvas = document.querySelector('canvas')
     @ctx = @canvas.getContext('2d')
     @video = document.querySelector("video")
 
-    if document.location.search != "?cam=demo"
+    if not demoMode
       if !navigator.getUserMedia
         navigator.getUserMedia = navigator.webkitGetUserMedia
       navigator.getUserMedia({
@@ -15,7 +15,7 @@ class Camera
       ), (e) ->
         console.log("cam failed", e)
       )
-      $("video").css({width: 320, height: 240})
+      $(@video).css({width: 320, height: 240})
     else
       @video.src = "booth.webm"
       @video.loop = true
@@ -27,7 +27,7 @@ class Camera
     scanners.css("top", 0).show()
     @picCopying(true)
     effectMs = 200
-    for t in (x for x in [0..effectMs * 1.2] by 20)
+    for t in (x for x in [0..effectMs * 1.2] by 10)
       setTimeout(((t2) -> (() =>
         scanners.css("top", (t2 / effectMs * 100) + "%")
       ))(t), t)
@@ -83,7 +83,6 @@ class Badge
 
   setPic: (imageData) =>
     # pass null for the waiting dots
-    console.log("Setpic", imageData?)
     if imageData?
       @_setXlinkHref('face', imageData)
     else
@@ -92,10 +91,8 @@ class Badge
 
   setUrl: (url) =>
     # pass null for the waiting dots
-    console.log("set to", url)
     if url?
       @_makeQrImageUrl(url, (imageUrl) =>
-        console.log("qr finished", imageUrl)
         @_setXlinkHref('qr', imageUrl)
       )
     else
@@ -110,8 +107,8 @@ class Badge
     i = document.createElement("div")
     q = new QRCode(i, {
       text: text,
-      width: 128,
-      height: 128
+      width: 256,
+      height: 256
     })
     q.makeImage()
 
@@ -124,10 +121,6 @@ class Badge
         return
       cb(imageData)
     setTimeout(fin, 50)
-
-
-
-
 
 class Model
   constructor: ->
@@ -172,15 +165,12 @@ class Model
     badge.setName(n + " #" + Math.floor(Math.random() * 99999))
 
     $.post("../../users", {station: "enroll", pic: @currentPicUri()}, (data) =>
-      console.log("scans", data)
       @currentUserUri("https://gametag.bigast.com"+data.user)
     )
 
   
 model = new Model()
-
-camera = new Camera(model.picCopying)
-    
+camera = new Camera(document.location.search == "?cam=demo", model.picCopying)  
 badge = new Badge(-> model.reset()) 
 model.setBadge(badge)
 
