@@ -1,3 +1,4 @@
+fs = require('fs')
 express = require("express")
 build = require("consolidate-build")
 mongo = require("mongodb")
@@ -80,7 +81,7 @@ openMongo (games, users, events) ->
   app.post "/users", (req, res) ->
     nextUserId((err, newId) ->
       e.newEvent("enroll",
-               {pic: "pic1", user: "/users/" + newId, label: "u"+newId},
+               {pic: req.body.pic, user: "/users/" + newId, label: "u"+newId},
                (err, ev) ->
                  throw err if err
                  sockets.sendToAll({"event":"enroll"})
@@ -98,6 +99,19 @@ openMongo (games, users, events) ->
                    throw err if err
                    sockets.sendToAll({event: "userScan", game: req.body.game})
                    res.json(200, doc)
+    )
+
+  app.post "/pic", (req, res) ->
+    # POST a jpeg image and get back a copy of the event that
+    # announces your new pic.
+    outBasename = (+new Date())+".jpg"
+    out = fs.createWriteStream("pic/"+outBasename)
+    req.on('data', (ch) -> out.write(ch))
+    req.on('end', () ->
+        out.close()
+        e.newEvent("pic", {"pic": "/pic/"+outBasename}, (err, ev) ->
+          res.json(200, ev)
+        )
     )
 
   app.get "/shared/:f", (req, res) ->
