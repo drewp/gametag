@@ -1,0 +1,58 @@
+
+    
+.grid 
+    display: -webkit-flex;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 166px;
+    bottom: 60px;
+
+.col {
+    padding: 30px;
+}
+.fluid {
+    -webkit-flex: 1;
+    min-height: 100%;
+}
+canvas { width: 320px; height: 240px; }
+button { padding: 10px; }
+
+#badge {
+    width: 310px;
+    height: 259px;
+    position: relative;
+}
+#badge
+  svg
+    position relative
+    top: -310px
+  > * { position: absolute; }
+  
+#qr {
+    left: 57px;
+    top: 58px;
+}
+#face {
+    left: 56px;
+    top: 231px;
+    width: 187px;
+    height: 133px;
+}
+#nametag {
+    left: 69px;
+    top: 222px;
+    background: rgba(255, 255, 255, .8);
+}
+
+.scannerArea
+  position relative
+  display inline-block
+
+.scanner
+  position absolute
+  width: 100%
+  height: 10px
+  background: red
+  opacity: .3
+  display: none

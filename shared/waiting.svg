@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="303.04578"
+   height="286.88333"
+   id="svg4527"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="New document 2">
+  <defs
+     id="defs4529" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="247.23243"
+     inkscape:cy="66.582475"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="947"
+     inkscape:window-height="581"
+     inkscape:window-x="1123"
+     inkscape:window-y="1074"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata4532">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-54.548237,-213.93558)">
+    <text
+       xml:space="preserve"
+       style="font-size:362.47390747px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Vindictive BRK;-inkscape-font-specification:Vindictive BRK"
+       x="114.88603"
+       y="388.33163"
+       id="text4535"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/my/proj/gametag/shared/waiting.svg.png"
+       inkscape:export-xdpi="56"
+       inkscape:export-ydpi="56"><tspan
+         sodipodi:role="line"
+         id="tspan4537"
+         x="114.88603"
+         y="388.33163">...</tspan></text>
+    <rect
+       style="color:#000000;fill:none;stroke:none;stroke-width:1.39999998;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4539"
+       width="303.04578"
+       height="286.88333"
+       x="54.548237"
+       y="213.93558"
+       inkscape:export-filename="/my/proj/gametag/shared/waiting.svg.png"
+       inkscape:export-xdpi="56"
+       inkscape:export-ydpi="56" />
+  </g>
+</svg>

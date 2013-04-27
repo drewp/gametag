@@ -2,23 +2,46 @@ doctype
 html
   head
     link(rel='stylesheet', href='../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    link(rel='stylesheet', type='text/css', href='style.css')
+
   body
-    canvas(width="320", height="240")
+    h1 Enrollment
+
     .grid
       .col.fluid
-        h1 Camera view
-        video(autoplay='autoplay')
+        h2 Camera view
+        div.scannerArea
+          video(autoplay='autoplay', data-bind="click: grab")
+          .scanner
+        
         div
-          button#grab 1 Grab
+          button(data-bind="click: grab, enable: grabEnabled")
+            | 
+            i.icon-camera
+            |  Grab
         p
           a(href='?cam=demo') use demo video instead of webcam
       .col.fluid
-        h1 New badge
-        div#badge
-        button#assemble 2 Assemble
-        button#print 3 Print
+        h2 New badge
+        div.scannerArea
+          div#badge
+          .scanner
         div
-          button(data-bind="click: makeDemoUser") makeDemoUser
+          button(data-bind="click: makeUser, enable: makeUserEnabled")
+            i.icon-plus
+            |  Make new user
+          button(data-bind="click: print, enable: printEnabled")
+            i.icon-print
+            span 
+            span#print Print
+          button(data-bind="click: reset, enable: resetEnabled")
+            i.icon-sign-blank
+            |  Reset
+            
+    #status
+    canvas(style="display: none", width="320", height="240")
+
     script(src='../../3rdparty/jquery-1.9.1.min.js')
     script(src='../../../3rdparty/knockout-2.2.1.js')
     script(src='../../../3rdparty/davidshimjs-qrcodejs-a413bc3/qrcode.min.js')
