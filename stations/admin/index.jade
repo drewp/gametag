@@ -2,6 +2,7 @@ doctype
 html
   head
     link(rel='stylesheet', type='text/css', href='../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
     link(rel='stylesheet', type='text/css', href='style.css')
   body
     h1 admin
@@ -14,10 +15,12 @@ html
           th Event type
           th
       tbody(data-bind="foreach: events")
-        tr(data-bind="css: {cancelled: cancelled}")
+        tr(data-bind="css: $parent.eventRowClasses($data)")
           td
             a(data-bind="attr: {href: uri}, text: $parent.prettyTime($data)")
-          td(data-bind="text: type")
+          td.eventType
+            i(data-bind="attr: {'class': $parent.iconClass($data)}")
+            span(data-bind="text: type")
           td(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
           td
             // draw this differently if we're already cancelled

@@ -22,16 +22,25 @@ exports.Events = (app, events, sockets) ->
     )
 
   @getAllEvents = (cb) =>
-    self.events.find().sort({t: 1}).toArray (err, results) ->
+    self.events.find().sort({t: -1}).toArray (err, results) ->
       throw err if err
+      prevDay = null
       cb(results.map((ev) ->
-        _.extend(ev, {uri: eventUriFromId(ev._id), cancelled: !!ev.cancelled})
+        thisDay = ev.t.toDateString()
+        augmented = _.extend(ev, {
+                uri: eventUriFromId(ev._id),
+                cancelled: !!ev.cancelled,
+                isNewDay: thisDay != prevDay,
+                })
+        prevDay = thisDay
+        augmented
       ))
 
   @addRequestHandlers = () ->
     events = @events
     newEvent = @newEvent
 
+    # the registration lines should be moved to server.coffee
     self.app.delete "/events/:id", (req, res) ->
       events.update({_id: mongo.ObjectID(req.params.id)}, {$set: {cancelled: true}}, (err) ->
         newEvent("cancel",
