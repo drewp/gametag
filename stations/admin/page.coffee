@@ -17,6 +17,7 @@ model =
         # see http://fortawesome.github.io/Font-Awesome/design.html
         enroll: 'icon-user'
         scan: 'icon-play-circle'
+        cancel: 'icon-ban-circle'
     }[ev.type]
   eventRowClasses: (ev) ->
     ret = {cancelled: ev.cancelled, isNewDay: ev.isNewDay}
