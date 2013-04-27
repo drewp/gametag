@@ -32,7 +32,7 @@ $.ajax
     $("#badge").html(data)
 
 
-getQrImageUrl = (text) ->
+getQrImageUrl = (text, cb) ->
   i = document.createElement("div")
   q = new QRCode(i, {
     text: text,
@@ -40,7 +40,10 @@ getQrImageUrl = (text) ->
     height: 128
   })
   q.makeImage()
-  i.children[1].getAttribute("src")
+
+  # calling getAttribute right away was getting me null (chrome 26.0.1410.43), but this way works
+  fin = -> cb(i.children[1].getAttribute("src"))
+  setTimeout(fin, 0)
 
 qrElem = $($("#qr")[0])
 qrElem.attr("xlink:href", "#")
@@ -48,15 +51,19 @@ qrElem.attr("xlink:href", "#")
 $("#assemble").click(() ->
       n = ["Endburo", "Tasgar", "Serit", "Tonumo", "Achath", "Itutan", "Endline", "Unda", "Vesaunt", "Rodundem"][Math.floor(Math.random() * 10)]
       $("#name1, #name2").text(n + " #" + Math.floor(Math.random() * 99999));
-      
-      qrElem.attr('xlink:href', getQrImageUrl("https://gametag.bigast.com/user/125"))
 
-      svgOut = new XMLSerializer().serializeToString($("#badge")[0])
+      getQrImageUrl("https://gametag.bigast.com/user/"+Math.floor(Math.random()*999), (imageUrl) ->
+        document.getElementById('qr').setAttribute('xlink:href', imageUrl)
+      )
 )
 
 $("#print").click(() ->
   origText = $("#print").text()
   $("#print").text("Printing...")
+
+  svgOut = new XMLSerializer().serializeToString($("#badge")[0].firstElementChild)
+  window.open("data:image/svg+xml;base64,"+btoa(svgOut), "print")
+
   setTimeout(() ->
     $("#nametag").text("")
     $("#qr").attr('src', '#')
