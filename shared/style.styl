@@ -1,51 +1,25 @@
-.grid 
-    display: -webkit-flex;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 60px;
+body
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,hsl(0, 0%, 15%)), color-stop(100%,hsl(0, 0%, 0%)))
+  color: hsl(0, 100%, 100%)
+  min-height: 1200px
+  font-family sans-serif
 
-.col {
-    background: #ccc;
-    padding: 30px;
-}
-.fluid {
-    -webkit-flex: 1;
-    min-height: 100%;
-}
-canvas { width: 320px; height: 240px; }
-button { padding: 10px; }
+h1
+  background-image: url("demo-logo.png");
+  padding-left: 250px;
+  height: 134px;
+  background-repeat: no-repeat;
+  background-position: -43px -20px;
+  padding-top: 30px;
+  background-color: hsla(0, 0%, 51%, 0.09);
+  font-size: 74px;
+  margin: -8px -8px 4px -8px;
 
-#badge {
-    width: 310px;
-    height: 259px;
-    position: relative;
-}
-#badge
-  svg
-    position relative
-    top: -310px
-  > * { position: absolute; }
-  
-#qr {
-    left: 57px;
-    top: 58px;
-}
-#face {
-    left: 56px;
-    top: 231px;
-    width: 187px;
-    height: 133px;
-}
-#nametag {
-    left: 69px;
-    top: 222px;
-    background: rgba(255, 255, 255, .8);
-}
+a
+  color hsl(240, 100%, 77%)
 
 #status
   color: gray
-  position: absolute
+  position: fixed
   right: 10px
   bottom: 0
