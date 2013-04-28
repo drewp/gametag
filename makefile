@@ -15,3 +15,10 @@ run_server_with_watch:
 	node_modules/node-dev/bin/node-dev server/server.coffee
 
 server/server.js: server/sockets.js server/events.js
+
+import_game_data_to_mongo:
+	mongoimport --host bang --db gametag --collection games --drop --file startup/games.json
+
+# system packages:
+# mongodb-clients
+# ppa:chris-lea/node.js package nodejs

@@ -67,6 +67,8 @@ openMongo (games, users, events) ->
   app.get "/", (req, res) ->
     games.find().toArray (err, results) ->
       throw err if err
+      for g in results
+        g.uri = "/stations/game/"+g._id+"/"
       res.render("stations/proto/index.jade", {
         title: "Consolidate.js",
         games: results
