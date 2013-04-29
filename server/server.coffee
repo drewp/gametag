@@ -8,7 +8,7 @@ server = require("http").createServer(app)
 Sockets = require("./sockets.js").Sockets
 _ = require("../3rdparty/underscore-1.4.4-min.js")
 Events = require("./events.js").Events
-
+exec = require('child_process').exec
 
 app.engine("jade", build.jade)
 app.engine("styl", build.stylus)
@@ -120,7 +120,35 @@ openMongo (games, users, events) ->
     respondFile(res, "./pic/", req.params.f)
 
   app.post "/print", (req, res) ->
-    
+    d = require('domain').create()
+    d.on('error', (err) ->
+          e.newEvent("printError",
+            {error: err},
+            (err, ev) -> res.json(500, ev)))
+    d.run =>
+      base = "pdf/" + (+new Date())
+      out = fs.createWriteStream(base + ".svg")
+      req.pipe(out)
+
+      req.on('end', () ->
+          exec("inkscape "+
+               "--export-pdf="+base+".pdf "+
+               "--export-dpi=300 "+base+".svg",
+               (err, stdout, stderr) ->
+                 if err?
+                   [err.stdout, err.stderr] = [stdout, stderr]
+                   throw err
+
+                 exec("lpr "+base+".pdf", (err, stdout, stderr) ->
+                   if err?
+                     [err.stdout, err.stderr] = [stdout, stderr]
+                     throw err
+
+                   e.newEvent("print", {}, (err, ev) -> res.json(200, ev))
+                 )
+          )
+      )
+
 
   app.get "/shared/:f", (req, res) ->
     respondFile(res, "./shared/", req.params.f)
