@@ -19,7 +19,7 @@ class Camera
             @canvas.width = @video.videoWidth
             @canvas.height = @video.videoHeight
           , false)
-      ), (e) ->
+      ), (e) =>
         console.log("cam failed", e)
         @video.src = "booth.webm"
         @video.loop = true
