@@ -9,10 +9,10 @@ display/withdraw those points.
 
 Other name ideas
 ----------------
-gametag
-qrnival
-partybadge
-badger
+*  gametag
+*  qrnival
+*  partybadge
+*  badger
 
 Schema 2
 --------
