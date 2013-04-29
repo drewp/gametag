@@ -13,8 +13,12 @@ class Camera
         navigator.getUserMedia = navigator.webkitGetUserMedia
       navigator.getUserMedia({
         video: true
-      }, ((localMediaStream) ->
+      }, ((localMediaStream) =>
         @video.src = window.URL.createObjectURL(localMediaStream)
+        @video.addEventListener("loadedmetadata", () =>
+            @canvas.width = @video.videoWidth
+            @canvas.height = @video.videoHeight
+          , false)
       ), (e) ->
         console.log("cam failed", e)
         @video.src = "booth.webm"
