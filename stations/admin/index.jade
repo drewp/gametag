@@ -23,7 +23,7 @@ html
             i(data-bind="attr: {'class': $parent.iconClass($data)}")
             span(data-bind="text: type")
           td
-            span(data-bind="with: pic")
+            span(data-bind="with: $data.pic")
               img#thumb(data-bind="attr: {src: $data}")
             span(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
           td
