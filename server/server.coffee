@@ -7,6 +7,7 @@ app = express()
 server = require("http").createServer(app)
 Sockets = require("./sockets.js").Sockets
 _ = require("../3rdparty/underscore-1.4.4-min.js")
+async = require("../3rdparty/async-0.2.7.js")
 Events = require("./events.js").Events
 exec = require('child_process').exec
 
@@ -28,11 +29,10 @@ openMongo = (cb) ->
     throw err if err
     client.collection 'games', (err, games) ->
       throw err if err
-      client.collection 'users', (err, users) ->
-        throw err if err
+      games.find({}).toArray (err, allGames) ->
         client.collection 'events', (err, events) ->
           throw err if err
-          cb(games, users, events)
+          cb(games, allGames, events)
 
 precompiledName = (requestedName) ->
   requestedName
@@ -50,7 +50,7 @@ respondFile = (res, prefix, requestedPath) ->
     else
       res.render(prefix + precompiledName(requestedPath))
 
-openMongo (games, users, events) ->
+openMongo (games, allGames, events) ->
   sockets = new Sockets(server, "/events")
 
   e = new Events(app, events, sockets)
@@ -60,6 +60,9 @@ openMongo (games, users, events) ->
 
   app.get "/events/all", (req, res) ->
     e.getAllEvents((events) -> res.json(200, {events: events}))
+    
+  app.post "/events", (req, res) ->
+    e.postEvent(req.body, (ev) -> res.json(200, ev))
 
   nextUserId = (cb) ->
     # this doesn't care about whether events were cancelled
@@ -76,10 +79,59 @@ openMongo (games, users, events) ->
       })
   app.get "/page.js", (req, res) -> respondFile(res, 'stations/proto/', 'page.js')
 
+  computeScore = (events, allGames, user, cb) ->
+    gameByUri = {}
+    for g in allGames
+      gameByUri["/games/"+g._id] = g
+
+    events.find({
+        user: user,
+        type: {$in: ["scan", "achievement"]},
+        cancelled: {$ne: true}
+      },
+      {sort: {t:1}}
+      ).toArray((err, evs) ->
+        score = {points: 0, games: 0}
+        async.each(evs, ((ev, cb) ->
+            console.log("consider", ev)
+            switch ev.type
+              when "scan"
+                score.points += gameByUri[ev.game].pointsForPlaying
+                score.games += 1
+            cb(null)
+          ),
+          ((err) ->
+            throw err if err?
+            cb(score)
+          )) 
+            
+      )
+
   app.get "/users", (req, res) ->
-    #todo
-    users.find().toArray (err, results) ->
-      res.json(200, {"users":results})
+    events.find({type:"enroll", cancelled: {$ne: true}}).toArray (err, enrolls) ->
+      throw err if err?
+      async.map(enrolls,
+                ((enrollEvent, cb) ->
+                  computeScore(events, allGames, enrollEvent.user, (score) ->
+                    enrollEvent.score = score
+                    cb(null, enrollEvent)
+                  )
+                 ),
+                ((err, users) ->
+                  throw err if err?
+                  res.json(200, {users: users})
+                  )
+      )
+
+  app.get "/users/:u", (req, res) ->
+    uri = "/users/"+req.params.u
+    events.findOne({type:"enroll", user: uri, cancelled: {$ne: true}}, (err, doc) ->
+      throw err if err?
+      computeScore(events, allGames, uri, (score) ->
+        doc.score = score
+        res.json(200, doc)
+      )
+    )
 
   app.post "/users", (req, res) ->
     nextUserId((err, newId) ->

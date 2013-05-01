@@ -68,6 +68,13 @@ exports.Events = (app, events, sockets) ->
       async.map(files, eventFromFile, replaceEvents)
     )
 
+  @postEvent = (body, cb) =>
+    @newEvent(body.type, _.omit(body, "type"), (err, ev) ->
+      throw err if err?
+      cb(ev)
+    )
+    
+
   @addRequestHandlers = () ->
     events = @events
     newEvent = @newEvent
@@ -80,11 +87,6 @@ exports.Events = (app, events, sockets) ->
                  (err) ->
                    res.send(204)
         )
-      )
-
-    self.app.post "/events", (req, res) ->
-      newEvent(req.body.type, _.omit(req.body, "type"), (err, ev) ->
-        res.send(204)
       )
 
     self.app.patch "/events/:id", (req, res) ->
