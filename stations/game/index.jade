@@ -2,17 +2,19 @@ doctype html
 html
   head
     title game station
+    link(rel='stylesheet', type='text/css', href='../../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
     link(rel='stylesheet', href='style.css')
   body
     .grid
-      img(src='game1.jpg')
+      img(data-bind="attr: {src: bgImage()}")
       .col.left
       .col.score
         .scanArea
           .scan
             .mode.idleMode
               div Waiting for badge scan
-            .mode.decodedMode(data-bind="visible: decoded")
+            .mode.decodedMode(data-bind="visible: recentlyScannedUser")
               div Identified
               div
                 img(src='kablam_Girl_s_face_in_black_frame.png')
@@ -27,8 +29,13 @@ html
               span.rank Private
       .col.right
     .demoButtons
-      button(data-bind="click: simUser1") simulate a scan from user1
-    
+      | Simulate a scan from
+      // ko foreach: simUsers
+      button(data-bind="click: $root.simUserScan, text: $data")
+      // /ko
+
+    p#status
+
     script(src='../../../3rdparty/jquery-1.9.1.min.js')
     script(src='../../../3rdparty/knockout-2.2.1.js')
     script(src='../../../shared/websocket.js')

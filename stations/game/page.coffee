@@ -1,20 +1,28 @@
-thisGame = "http://game1" # to get from url
+gameId = window.location.pathname.split("/")[3]
+thisGame = "/games/"+gameId
 
 $(".scorecard").hide()
 
 class Model
   constructor: ->
-    @decoded = ko.observable(false)
-  simUser1: =>
-    $.post("../../../events", {type: "scan", user: "/users/1", game: thisGame}, (data) ->
-      console.log("scans", data)
+    @recentlyScannedUser = ko.observable(null)
+
+    @simUsers = ('/users/'+x for x in [1..5])
+    
+  simUserScan: (who) =>
+    $.post("../../../events", {type: "scan", user: who, game: thisGame}, (ev) ->
+      console.log("test scan made event", ev)
     )
+    
+  bgImage: =>
+    "bg/"+ gameId + ".jpg"
 
 model = new Model()
 
 new reconnectingWebSocket(socketRoot + "/events", (msg) ->
   if msg.type == "scan" && msg.game == thisGame
-    model.decoded(true)
+    model.recentlyScannedUser(msg.user)
+    
     $(".scorecard")
       .addClass("scorecardAnim")
       .show()
