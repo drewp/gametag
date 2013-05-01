@@ -1,3 +1,6 @@
+fs = require('fs')
+path = require('path')
+async = require("../3rdparty/async-0.2.7.js")
 _ = require("../3rdparty/underscore-1.4.4-min.js")
 mongo = require("mongodb")
 
@@ -35,6 +38,35 @@ exports.Events = (app, events, sockets) ->
         prevDay = thisDay
         augmented
       ))
+
+  @syncPicEvents = (done) =>
+    ###
+       the pic/ dir is the authority; mongo events with type:"pic" are a
+       mirror of the names and timestamps of the files. type:"pic" event
+       _id fields are not considered stable.
+    ###
+    fs.readdir("pic/", (err, files) =>
+      throw err if err?
+
+      eventFromFile = (f, cb) =>
+        picPath = path.join("pic/", f)
+        picUri = "/" + picPath
+        fs.stat(picPath, (err, stats) ->
+          cb(err, {type: "pic", t: stats.mtime, pic: picUri}))
+          
+      replaceEvents = (err, newPicEvents) =>
+        @events.remove({type: "pic"}, {safe: true}, (err) =>
+          throw err if err?
+          @events.insert(newPicEvents, {safe: true}, (err) =>
+            throw err if err?
+            console.log("updated pic events, error: "+err)
+            self.sockets.sendToAll({'type':'reload'})
+            done() if done?
+          )
+        )
+        
+      async.map(files, eventFromFile, replaceEvents)
+    )
 
   @addRequestHandlers = () ->
     events = @events

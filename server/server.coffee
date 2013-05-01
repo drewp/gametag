@@ -54,6 +54,7 @@ openMongo (games, users, events) ->
   sockets = new Sockets(server, "/events")
 
   e = new Events(app, events, sockets)
+  e.syncPicEvents()
 
   e.addRequestHandlers()
 
@@ -92,6 +93,9 @@ openMongo (games, users, events) ->
     )
 
   # GET /users/:id is what guests will revisit from their own badges later
+
+  app.post "/picRescan", (req, res) ->
+    e.syncPicEvents(() -> res.json(200, {}))
   
   app.post "/scans", (req, res) ->
     users.update({uri: req.body.qr},
