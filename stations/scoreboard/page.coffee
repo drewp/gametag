@@ -1,7 +1,7 @@
 model =
   users: ko.observableArray([])
-  numColumns: 3
-  maxTopUsers: 12
+  numColumns: 5
+  maxTopUsers: 25
 
 readEvents = ->
   $.getJSON "../../events/all", {}, (data) ->
