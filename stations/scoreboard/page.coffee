@@ -4,22 +4,9 @@ model =
   maxTopUsers: 25
 
 readEvents = ->
-  $.getJSON "../../events/all", {}, (data) ->
-
-    users = []
-    byUri = {}
-    for ev in data.events by -1
-      if ev.cancelled
-        continue
-      switch ev.type
-        when 'enroll'
-          row = _.extend({"points": 0, "games": 0}, ev)
-          users.push(row)
-          byUri[ev.user] = row
-        when 'scan'
-          byUri[ev.user].games++
-    
-    model.users(_.first(_.sortBy(users, (u) -> [-u.points, -u.games]), model.maxTopUsers))
+  $.getJSON "../../users", {}, (data) ->
+    users = _.sortBy(data.users, (u) -> [-u.score.points, -u.score.games])
+    model.users(_.first(users, model.maxTopUsers))
     
 readEvents()
 

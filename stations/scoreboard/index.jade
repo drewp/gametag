@@ -22,13 +22,13 @@ html
                 th points
             tbody(data-bind="foreach: _.values(_.pick($parent.users(), _.range($data, $parent.users().length, $root.numColumns)))")
               tr
-                td
-                  img(width="64", height="64", data-bind="attr: {src: pic}")
+                td.who
+                  img.badge(data-bind="attr: {src: pic}")
                   div(data-bind="text: user")
-                td
-                  span(data-bind="text: games")
-                td
-                  span(data-bind="text: points")
+                td.nGames
+                  span(data-bind="text: score.games")
+                td.nPoints
+                  span(data-bind="text: score.points")
 
     p#status
     
