@@ -15,7 +15,7 @@ class Camera
         video: true
       }, ((localMediaStream) =>
         @video.src = window.URL.createObjectURL(localMediaStream)
-        @video.addEventListener("loadedmetadata", () =>
+        @video.addEventListener("loadeddata", () =>
             @canvas.width = @video.videoWidth
             @canvas.height = @video.videoHeight
           , false)
