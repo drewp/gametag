@@ -1,0 +1,11 @@
+#!/bin/zsh
+for x (pest arachnoid flower viridian crater volcano quarry memory ring stack fishing tic enemy robot lander) {
+    convert \
+        -size 1200x800 \
+        xc: \
+        -sparse-color barycentric '0,%h black  -%w,0 black  %w,0 skyblue' \
+        -fill black \
+        -pointsize 72 \
+        -annotate +50+70 "($x background image)" \
+        $x.jpg
+}
