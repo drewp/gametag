@@ -5,12 +5,20 @@ get zbar for python
 get numpy-1.7.1
 get opencv-2.4.0
 
+
+python-requests
+
+a qr that says 'station=/some/uri' shall change our this-station file
+to contain /some/uri
+
 """
 import subprocess, time
 import zbar
 from cv2 import cv
+from requests.api import post
 
 def playSound(wavPath):
+    # see blockstack for a real sound player that can go bg
     subprocess.check_output(['/usr/bin/aplay', '-q', wavPath])
     
 display = True
@@ -20,7 +28,6 @@ if display:
 
 print "capturing"
 capture = cv.CaptureFromCAM(0)
-cv.SetCaptureProperty(capture, cv.CV_CAP_PROP_EXPOSURE, 5)
 
 width, height = cv.GetSize(cv.QueryFrame(capture))
 
@@ -29,10 +36,12 @@ scanner.parse_config('enable')
 
 gray = cv.CreateMat(480, 640, cv.CV_8UC1)
 
-playSound('215.wav')
+playSound('request-station.wav')
 
 lastSeen = {} # data : time
 noRepeatSecs = 10 # ignore repeated scans spaced less than this
+
+station = None
 
 while True:
     img = cv.QueryFrame(capture)
@@ -49,8 +58,13 @@ while True:
     
     for symbol in zbar_img:
         if lastSeen.get(symbol.data, 0) < now - noRepeatSecs:
-            playSound('203.wav')
-            print "found", symbol.data, symbol.location
-
+            if station is None:
+                station = symbol.data
+                playSound('station-received.wav')
+            else:
+                playSound('scanned-person.wav')
+                print "found", symbol.data, symbol.location
+                post("https://gametag.bigast.com/scan", verify=False, timeout=2,
+                     data={'station': station, 'user': symbol.data})
         lastSeen[symbol.data] = now
 
