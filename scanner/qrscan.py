@@ -21,7 +21,7 @@ def playSound(wavPath):
     # see blockstack for a real sound player that can go bg
     subprocess.check_output(['/usr/bin/aplay', '-q', wavPath])
     
-display = True
+display = False
 
 if display:
     win = cv.NamedWindow('qr')
@@ -58,13 +58,14 @@ while True:
     
     for symbol in zbar_img:
         if lastSeen.get(symbol.data, 0) < now - noRepeatSecs:
-            if station is None:
+            if station is None: # or it's a replacement station card?
                 station = symbol.data
+                print "this station is now", station
                 playSound('station-received.wav')
             else:
                 playSound('scanned-person.wav')
                 print "found", symbol.data, symbol.location
-                post("https://gametag.bigast.com/scan", verify=False, timeout=2,
-                     data={'station': station, 'user': symbol.data})
+                post("https://gametag.bigast.com/scans", timeout=2,
+                     data={'game': station, 'qr': symbol.data})
         lastSeen[symbol.data] = now
 
