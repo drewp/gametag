@@ -16,6 +16,13 @@ model =
   eventSpecific: (ev) ->
     _.omit(ev, ['_id', 'type', 't', 'uri', 'cancelled', 'isNewDay'])
 
+  eventQr: (ev) ->
+    if ev.user
+      uri = "https://gametag.bigast.com" + ev.user
+      "https://chart.googleapis.com/chart?chs=250x250&cht=qr&"+$.param({chl: uri})
+    else
+      null
+
   iconClass: (ev) ->
     {
         # see http://fortawesome.github.io/Font-Awesome/design.html
