@@ -1,0 +1,60 @@
+doctype html
+html
+  head
+    title game station
+    link(rel='stylesheet', type='text/css', href='../../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    link(rel='stylesheet', href='style.css')
+  body
+    h1
+      | game operator console for
+      |  
+      span(data-bind="text: game() && game().label")
+
+    fieldset
+      legend Last scanned
+      div
+        | User: 
+        span(data-bind="text: lastUser")
+      div
+        | Scan time: 
+        span(data-bind="text: scanAgo")
+      div(data-bind="with: lastUserData")
+        img(class="user", data-bind="attr: {src: pic}")
+        div
+          | Name: 
+          span(data-bind="text: label")
+        div
+          | Score:
+          span(data-bind="text: JSON.stringify(score)")
+    
+    fieldset
+      legend Achievements for this game
+      div(class="achievement", data-bind="foreach: game() && game().achievements")
+        h3
+          | Get 
+          span(data-bind="text: label")
+
+        div.summary
+          | and win 
+          span(data-bind="text: $root.summarizeWin($data)")
+          
+        div(data-bind="text: JSON.stringify($data)")
+        button(data-bind="with: $root.lastUserData, click: $root.award")
+          span(data-bind="text: label")
+          |  wins
+          | '
+          span(data-bind="text: $parent.label")
+          | '
+
+          
+        
+    p#status
+
+    script(src='../../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../../3rdparty/knockout-2.2.1.js')
+    script(src='../../../3rdparty/moment-2.0.0.min.js')
+    script(src='../../../3rdparty/underscore-1.4.4-min.js')
+    script(src='../../../shared/websocket.js')
+    script(src='../../../shared/netconfig.js')
+    script(src="page.js")
