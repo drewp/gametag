@@ -1,18 +1,7 @@
 """
-get python 2.6.6 (for zbar compatibility)
-get zbar-0.10
-get zbar for python
-get numpy-1.7.1
-get opencv-2.4.0
-
-
-python-requests
-
-a qr that says 'station=/some/uri' should change the station we're
-sending to /some/uri
 
 """
-import time
+import time, argparse
 import zbar
 from cv2 import cv
 from requests.api import post
@@ -58,43 +47,60 @@ class Sounds(object):
         if prev:
             self.player.next()
         self.player.play()
-        
-scanner = Scanner()
-sounds = Sounds()
                 
-lastSeen = {} # data : time
-noRepeatSecs = 10 # ignore repeated scans spaced less than this
-
-station = None
-
 class ScannerLoop(app.EventLoop):
-    def __init__(self):
+    def __init__(self, args, sounds, scanner):
         app.EventLoop.__init__(self)
         sounds.play('request-station.wav')
+        self.args, self.sounds, self.scanner = args, sounds, scanner
+        self.station = None # our station uri (configured with a QR code)
+        self.lastSeen = {} # data : time
         
     def idle(self):
         app.EventLoop.idle(self)
-        img = scanner.getZbarCameraImage()
+        img = self.scanner.getZbarCameraImage()
         self.handleMatches(img)
         return 0.05
         
     def handleMatches(self, img):
-        global station
         now = time.time()
 
         for symbol in img:
-            if lastSeen.get(symbol.data, 0) < now - noRepeatSecs:
-                if station is None:
-                    station = symbol.data
-                    print "station is now", station
-                    sounds.play('station-received.wav')
+            if self.lastSeen.get(symbol.data, 0) < now - self.args.norepeat:
+                if self.station is None:
+                    self.station = symbol.data
+                    print "station is now", self.station
+                    self.sounds.play('station-received.wav')
                 else:
-                    sounds.play('scanned-person.wav')
+                    # todo: a qr that says 'station=/some/uri' should
+                    # change the station we're sending to /some/uri
+
+                    self.sounds.play('scanned-person.wav')
                     print "found", symbol.data, symbol.location
-                    post("https://gametag.bigast.com/scan", verify=False,
+                    post(self.args.post, verify=False,
                          timeout=2,
-                         data={'station': station, 'user': symbol.data})
-            lastSeen[symbol.data] = now
+                         data={'station': self.station, 'user': symbol.data})
+            self.lastSeen[symbol.data] = now
 
-ScannerLoop().run()
+def main():
+    parser = argparse.ArgumentParser(
+        description='watch webcam for QR codes; send them as HTTP POST requests')
+    parser.add_argument('--display',
+                        action='store_true',
+                        help='show incoming video in a window')
+    parser.add_argument('--post',
+                        default="https://gametag.bigast.com/scan",
+                        metavar="url",
+                        help="url we post to")
+    parser.add_argument('--cam', default=0, type=int, metavar='num',
+                        help='CV number for camera to read from')
+    parser.add_argument('--norepeat', default=10, type=int, metavar='secs',
+                        help='ignore repeated scans spaced closer than this')
 
+    args = parser.parse_args()
+
+    scanner = Scanner(display=args.display, cvCameraNumber=args.cam)
+    sounds = Sounds()
+
+    ScannerLoop(args, sounds, scanner).run()
+main()
