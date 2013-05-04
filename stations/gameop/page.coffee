@@ -68,7 +68,7 @@ $.getJSON(".././../../events/all", (data) ->
 
 new reconnectingWebSocket(socketRoot + "/events", (msg) ->
   onEvent(msg)
-  if msg.type in ["scan", "achievement"]
+  if msg.type in ["scan", "achievement", "cancel"]
     reloadUser()
 )
 ko.applyBindings(model)
