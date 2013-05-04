@@ -162,12 +162,8 @@ openMongo (games, allGames, events) ->
     e.syncPicEvents(() -> res.json(200, {}))
   
   app.post "/scans", (req, res) ->
-    users.update({uri: req.body.qr},
-                 {$push: {"scans": {game: req.body.game, t: new Date()}}},
-                 {safe: true},
-                 (err, doc) ->
+    e.newEvent("scan", {user: req.body.qr, game: req.body.game}, (err, doc) ->
                    throw err if err
-                   sockets.sendToAll({event: "userScan", game: req.body.game})
                    res.json(200, doc)
     )
 
