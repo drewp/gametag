@@ -43,7 +43,7 @@ class Model
 model = new Model()
 
 isScanEvent = (ev) ->
-  ev.type == "scan" && ev.game == thisGame
+  ev.type == "scan" && ev.game in [thisGame, "https://gametag.bigast.com"+thisGame]
 
 userXhr = null
 reloadUser = () ->
