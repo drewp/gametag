@@ -47,7 +47,7 @@ isScanEvent = (ev) ->
 
 userXhr = null
 reloadUser = () ->
-    userXhr.cancel() if userXhr?
+    userXhr.abort() if userXhr?
     userXhr = $.getJSON(model.lastUser(), (data) =>
       model.lastUserData(data)
     )
