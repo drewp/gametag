@@ -49,8 +49,15 @@ class Scanner(object):
         return zimg
 
 class Sounds(object):
+    def __init__(self):
+        self.player = media.Player()
     def play(self, name):
-        media.load(name, streaming=False).play()
+        self.player.pause()
+        prev = self.player.source
+        self.player.queue(media.load(name, streaming=False))
+        if prev:
+            self.player.next()
+        self.player.play()
         
 scanner = Scanner()
 sounds = Sounds()
