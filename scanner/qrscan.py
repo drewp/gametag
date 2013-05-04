@@ -77,9 +77,9 @@ class ScannerLoop(app.EventLoop):
 
                     self.sounds.play('scanned-person.wav')
                     print "found", symbol.data, symbol.location
-                    post(self.args.post, verify=False,
+                    print post(self.args.post, verify=False,
                          timeout=2,
-                         data={'station': self.station, 'user': symbol.data})
+                         data={'game': self.station, 'qr': symbol.data})
             self.lastSeen[symbol.data] = now
 
 def main():
@@ -89,7 +89,7 @@ def main():
                         action='store_true',
                         help='show incoming video in a window')
     parser.add_argument('--post',
-                        default="https://gametag.bigast.com/scan",
+                        default="https://gametag.bigast.com/scans",
                         metavar="url",
                         help="url we post to")
     parser.add_argument('--cam', default=0, type=int, metavar='num',
