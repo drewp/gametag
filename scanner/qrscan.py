@@ -18,48 +18,58 @@ from cv2 import cv
 from requests.api import post
 from pyglet import media, app
 
-display = True
+class Scanner(object):
+    def __init__(self, cvCameraNumber=0, display=True):
 
-if display:
-    win = cv.NamedWindow('qr')
+        self.display = display
 
-sounds = {}
-for f in ["station-received.wav", 'request-station.wav', 'scanned-person.wav']:
-    sounds[f] = media.load(f)
+        if self.display:
+            self.win = cv.NamedWindow('qr')
 
-print "capturing"
-capture = cv.CaptureFromCAM(0)
+        print "capturing video"
+        self.capture = cv.CaptureFromCAM(cvCameraNumber)
 
-width, height = cv.GetSize(cv.QueryFrame(capture))
+        self.width, self.height = cv.GetSize(cv.QueryFrame(self.capture))
 
-scanner = zbar.ImageScanner()
-scanner.parse_config('enable')
+        self.scanner = zbar.ImageScanner()
+        self.scanner.parse_config('enable')
 
-gray = cv.CreateMat(480, 640, cv.CV_8UC1)
+        self.gray = cv.CreateMat(480, 640, cv.CV_8UC1)
 
-sounds['request-station.wav'].play()
+    def getZbarCameraImage(self):
+        img = cv.QueryFrame(self.capture)
+        cv.CvtColor(img, self.gray, cv.CV_RGB2GRAY)
 
+        if self.display:
+            cv.ShowImage('qr', self.gray)
+            cv.WaitKey(1)
+
+        zimg = zbar.Image(self.width, self.height, 'Y800', self.gray.tostring())
+        self.scanner.scan(zimg)
+        return zimg
+
+class Sounds(object):
+    def play(self, name):
+        media.load(name, streaming=False).play()
+        
+scanner = Scanner()
+sounds = Sounds()
+                
 lastSeen = {} # data : time
 noRepeatSecs = 10 # ignore repeated scans spaced less than this
 
 station = None
 
 class ScannerLoop(app.EventLoop):
+    def __init__(self):
+        app.EventLoop.__init__(self)
+        sounds.play('request-station.wav')
+        
     def idle(self):
-        img = self.getZbarCameraImage()
-        scanner.scan(img)
+        app.EventLoop.idle(self)
+        img = scanner.getZbarCameraImage()
         self.handleMatches(img)
-        return 0
-
-    def getZbarCameraImage(self):
-        img = cv.QueryFrame(capture)
-        cv.CvtColor(img, gray, cv.CV_RGB2GRAY)
-
-        if display:
-            cv.ShowImage('qr', gray)
-            cv.WaitKey(1)
-
-        return zbar.Image(width, height, 'Y800', gray.tostring())
+        return 0.05
         
     def handleMatches(self, img):
         global station
@@ -69,9 +79,10 @@ class ScannerLoop(app.EventLoop):
             if lastSeen.get(symbol.data, 0) < now - noRepeatSecs:
                 if station is None:
                     station = symbol.data
-                    sounds['station-received.wav'].play()
+                    print "station is now", station
+                    sounds.play('station-received.wav')
                 else:
-                    sounds['scanned-person.wav'].play()
+                    sounds.play('scanned-person.wav')
                     print "found", symbol.data, symbol.location
                     post("https://gametag.bigast.com/scan", verify=False,
                          timeout=2,
