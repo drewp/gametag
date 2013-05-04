@@ -8,23 +8,24 @@ get opencv-2.4.0
 
 python-requests
 
-a qr that says 'station=/some/uri' shall change our this-station file
-to contain /some/uri
+a qr that says 'station=/some/uri' should change the station we're
+sending to /some/uri
 
 """
-import subprocess, time
+import time
 import zbar
 from cv2 import cv
 from requests.api import post
+from pyglet import media, app
 
-def playSound(wavPath):
-    # see blockstack for a real sound player that can go bg
-    subprocess.check_output(['/usr/bin/aplay', '-q', wavPath])
-    
-display = False
+display = True
 
 if display:
     win = cv.NamedWindow('qr')
+
+sounds = {}
+for f in ["station-received.wav", 'request-station.wav', 'scanned-person.wav']:
+    sounds[f] = media.load(f)
 
 print "capturing"
 capture = cv.CaptureFromCAM(0)
@@ -36,36 +37,46 @@ scanner.parse_config('enable')
 
 gray = cv.CreateMat(480, 640, cv.CV_8UC1)
 
-playSound('request-station.wav')
+sounds['request-station.wav'].play()
 
 lastSeen = {} # data : time
 noRepeatSecs = 10 # ignore repeated scans spaced less than this
 
 station = None
 
-while True:
-    img = cv.QueryFrame(capture)
-    cv.CvtColor(img, gray, cv.CV_RGB2GRAY)
+class ScannerLoop(app.EventLoop):
+    def idle(self):
+        img = self.getZbarCameraImage()
+        scanner.scan(img)
+        self.handleMatches(img)
+        return 0
 
-    if display:
-        cv.ShowImage('qr', gray)
-        cv.WaitKey(1)
+    def getZbarCameraImage(self):
+        img = cv.QueryFrame(capture)
+        cv.CvtColor(img, gray, cv.CV_RGB2GRAY)
 
-    zbar_img = zbar.Image(width, height, 'Y800', gray.tostring())
-    scanner.scan(zbar_img)
+        if display:
+            cv.ShowImage('qr', gray)
+            cv.WaitKey(1)
 
-    now = time.time()
-    
-    for symbol in zbar_img:
-        if lastSeen.get(symbol.data, 0) < now - noRepeatSecs:
-            if station is None: # or it's a replacement station card?
-                station = symbol.data
-                print "this station is now", station
-                playSound('station-received.wav')
-            else:
-                playSound('scanned-person.wav')
-                print "found", symbol.data, symbol.location
-                post("https://gametag.bigast.com/scans", timeout=2,
-                     data={'game': station, 'qr': symbol.data})
-        lastSeen[symbol.data] = now
+        return zbar.Image(width, height, 'Y800', gray.tostring())
+        
+    def handleMatches(self, img):
+        global station
+        now = time.time()
+
+        for symbol in img:
+            if lastSeen.get(symbol.data, 0) < now - noRepeatSecs:
+                if station is None:
+                    station = symbol.data
+                    sounds['station-received.wav'].play()
+                else:
+                    sounds['scanned-person.wav'].play()
+                    print "found", symbol.data, symbol.location
+                    post("https://gametag.bigast.com/scan", verify=False,
+                         timeout=2,
+                         data={'station': station, 'user': symbol.data})
+            lastSeen[symbol.data] = now
+
+ScannerLoop().run()
 
