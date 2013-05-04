@@ -64,7 +64,7 @@ exports.Events = (app, events, sockets) ->
             done() if done?
           )
         )
-        
+      # todo: this blows up if there are no pics yet
       async.map(files, eventFromFile, replaceEvents)
     )
 

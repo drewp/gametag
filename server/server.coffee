@@ -59,10 +59,12 @@ openMongo (games, allGames, events) ->
   e.addRequestHandlers()
 
   app.get "/events/all", (req, res) ->
+    # newest first
     e.getAllEvents((events) -> res.json(200, {events: events}))
     
   app.post "/events", (req, res) ->
-    e.postEvent(req.body, (ev) -> res.json(200, ev))
+    body = req.body
+    e.postEvent(body, (ev) -> res.json(200, ev))
 
   nextUserId = (cb) ->
     # this doesn't care about whether events were cancelled
@@ -98,6 +100,8 @@ openMongo (games, allGames, events) ->
               when "scan"
                 score.points += gameByUri[ev.game].pointsForPlaying
                 score.games += 1
+              when "achievement"
+                score.points += ev.won.points if ev.won.points?
             cb(null)
           ),
           ((err) ->
@@ -126,12 +130,20 @@ openMongo (games, allGames, events) ->
   app.get "/users/:u", (req, res) ->
     uri = "/users/"+req.params.u
     events.findOne({type:"enroll", user: uri, cancelled: {$ne: true}}, (err, doc) ->
-      throw err if err?
+      if err?
+        res.send(500)
+        return
+      if not doc?
+        res.send(404)
+        return
       computeScore(events, allGames, uri, (score) ->
         doc.score = score
         res.json(200, doc)
       )
     )
+
+  app.get "/games/:g", (req, res) ->
+    res.json(200, _.find(allGames, (g) -> g._id == req.params.g))
 
   app.post "/users", (req, res) ->
     nextUserId((err, newId) ->
@@ -212,10 +224,13 @@ openMongo (games, allGames, events) ->
   app.get /// /3rdparty/(.*) ///, (req, res) ->
     res.sendfile('./3rdparty/' + req.params[0], {maxAge: 100000000})
 
-  # the next segment after /stations/game/ is ignored by this
-  # server, but the browser can use it to differentiate
+  # the next segment after /stations/game/ or /stations/gameop/ is
+  # ignored by this server, but the browser can use it to
+  # differentiate
   app.get(/// /(stations/game/[^/]+/)(.*) ///,
           (req, res) -> respondFile(res, "stations/game/", req.params[1]))
+  app.get(/// /(stations/gameop/[^/]+/)(.*) ///,
+          (req, res) -> respondFile(res, "stations/gameop/", req.params[1]))
   app.get(/// /(stations/[^/]+/)(.*) ///,
           (req, res) -> respondFile(res, req.params[0], req.params[1]))
 
