@@ -11,7 +11,10 @@ html
     li: a(href='/stations/prize/') prize station
     li: a(href='/stations/admin/') admin station
     each g in locals.games
-      li: a(href=g.uri)= g.label
+      li
+        a(href=g.uri)= g.label
+        | /
+        a(href=g.gameOp) Operator screen
 
     p#status
     script(src='../../3rdparty/jquery-1.9.1.min.js')
