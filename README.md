@@ -28,3 +28,7 @@ games
 
   {id: shortname, background: pic, pointsPerScan: n}
 
+-----
+To make shared/noise.gif
+for x ({1..10}) { convert -size 120x90 xc:gray +noise poisson -modulate 100,0,100 noise$x.png }
+convert -delay 3 -loop 0 noise*png noise.gif
