@@ -19,9 +19,9 @@ html
         tr(data-bind="css: $parent.eventRowClasses($data)")
           td.time
             a(data-bind="attr: {href: uri}, text: $parent.prettyTime($data)")
-          td.eventType
+          td.eventType(data-bind="attr: {title: 'type: '+type}")
             i(data-bind="attr: {'class': $parent.iconClass($data)}")
-            span(data-bind="text: type")
+            span(data-bind="text: type.replace('achievement','achv')")
           td
             span(data-bind="with: $data.pic")
               a(data-bind="attr: {href: $data}")

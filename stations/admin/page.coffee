@@ -30,6 +30,7 @@ model =
         scan: 'icon-play-circle'
         cancel: 'icon-ban-circle'
         pic: 'icon-camera'
+        achievement: 'icon-money'
     }[ev.type]
 
   eventRowClasses: (ev) ->
