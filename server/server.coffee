@@ -75,6 +75,7 @@ openMongo (games, allGames, events) ->
       throw err if err
       for g in results
         g.uri = "/stations/game/"+g._id+"/"
+        g.gameOp = "/stations/gameop/"+g._id+"/"
       res.render("stations/proto/index.jade", {
         title: "Consolidate.js",
         games: results
