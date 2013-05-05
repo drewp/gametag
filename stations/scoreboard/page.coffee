@@ -5,7 +5,13 @@ model =
 
 readEvents = ->
   $.getJSON "../../users", {}, (data) ->
-    users = _.sortBy(data.users, (u) -> [-u.score.points, -u.score.games])
+    users = data.users
+
+    users.sort (a,b) ->
+      if a.score.points == b.score.points
+        return (if a.label < b.label then -1 else 1)
+      return (if a.score.points > b.score.points then -1 else 1)
+
     model.users(_.first(users, model.maxTopUsers))
     
 readEvents()
