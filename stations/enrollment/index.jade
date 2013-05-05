@@ -28,6 +28,9 @@ html
           div#badge
           .scanner
         div
+          | Name for badge:
+          input#enterName(data-bind="value: enteredName, valueUpdate: 'afterkeydown'")
+        div
           button(data-bind="click: makeUser, enable: makeUserEnabled")
             i.icon-plus
             |  Make new user

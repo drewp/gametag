@@ -146,16 +146,21 @@ class Model
     @resetEnabled = ko.computed(=> @currentPicUri() || @currentUserUri())
     @makeUserEnabled = ko.computed(=> !@currentUserUri())
     @printEnabled = ko.computed(=> @currentUserUri())
+    @enteredName = ko.observable("")
 
   setBadge: =>
-    ko.computed(=>
+    ko.computed =>
       badge.setUrl(@currentUserUri())
-    )   
+
+    ko.computed =>
+      badge.setName(@enteredName())
 
   grab: =>
     camera.grab(badge.setPic, @currentPicUri)
+    $("#enterName").focus()
 
   reset: =>
+    @enteredName("")
     @currentUserUri(null)
     badge.setName("")
     badge.setPic(null)
@@ -175,11 +180,14 @@ class Model
     )
 
   makeUser: =>
-    n = ["Endburo", "Tasgar", "Serit", "Tonumo", "Achath", "Itutan", "Endline", "Unda", "Vesaunt", "Rodundem"][Math.floor(Math.random() * 10)]
-    badge.setName(n)
-
-    $.post("../../users", {station: "enroll", label: n, pic: @currentPicUri()}, (data) =>
-      @currentUserUri("https://gametag.bigast.com"+data.user)
+    $.post(
+      "../../users",
+      {
+        station: "enroll",
+        label: @enteredName(),
+        pic: @currentPicUri()
+      },
+      ((data) => @currentUserUri("https://gametag.bigast.com"+data.user))
     )
 
   
