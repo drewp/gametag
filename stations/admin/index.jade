@@ -24,7 +24,11 @@ html
             span(data-bind="text: type")
           td
             span(data-bind="with: $data.pic")
-              img#thumb(data-bind="attr: {src: $data}")
+              a(data-bind="attr: {href: $data}")
+                img#thumb(data-bind="attr: {src: $data}")
+            span(data-bind="with: $root.eventQr($data)")
+              a(data-bind="attr: {href: $data}") QR
+              
             span(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
           td
             // draw this differently if we're already cancelled
