@@ -12,9 +12,11 @@ html
     li: a(href='/stations/admin/') admin station
     each g in locals.games
       li
-        a(href=g.uri)= g.label
-        | /
-        a(href=g.gameOp) Operator screen
+        span= g.label
+        | 
+        a(href=g.uri) Game
+        |  / 
+        a(href=g.gameOp) Operator
 
     p#status
     script(src='../../3rdparty/jquery-1.9.1.min.js')
