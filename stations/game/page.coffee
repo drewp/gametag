@@ -1,76 +1,115 @@
 gameId = window.location.pathname.split("/")[3]
 thisGame = "/games/"+gameId
 
-$(".scorecard").hide()
+
+class NewScoreEvents
+  # tracks the events that affect the current player on this play of the game
+  # 
+  constructor: () ->
+    # these are scan and achievement events in increasing time order,
+    # augmented with 'scoreDesc' and 'scoreWon' display strings. If
+    # there's no current scan, this array will be empty.
+    @eventList = ko.observableArray([])
+    @currentUser = ko.observable(null)
+    
+  rebuild: (allEvents) ->
+    @eventList.removeAll()
+    for ev in @_eventsSinceLastScan(allEvents) # forwards in time
+      @onNewEvent(ev)
+    console.log("rebuilt", @eventList())
+    
+  onNewEvent: (ev) =>
+    # add new event to @eventList if appropriate, and clear/restart eventList
+    if ev.cancelled
+      return
+    if ev.type == "scan"
+      if ev.game == thisGame
+        if !ev.user?
+          @_onClearEvent(ev)
+          return
+        else
+          @_onNewUserScanEvent(ev)
+    else
+      if ev.game == thisGame && ev.user == @currentUser()
+        @_onNewEventForCurrentUser(ev)
+
+  _onClearEvent: (ev) =>
+    @eventList.removeAll()
+    @currentUser(null)
+
+  _onNewUserScanEvent: (ev) =>
+    @eventList([@_augment(ev)])
+    @currentUser(ev.user)
+
+  _onNewEventForCurrentUser: (ev) =>
+    @eventList.push(@_augment(ev))
+
+  _augment: (ev) =>
+    [ev.scoreDesc, ev.scoreWon] = switch ev.type
+      when "scan"
+        ["Points for playing", "??"]
+      when "achievement"
+        ["Got "+ev.won.label, summarizeWin(ev.won)]
+    ev
+
+  _eventsSinceLastScan: (allEvents) =>
+    # result may still include irrelevant events, but it always starts
+    # at the most recent scan for this game
+    ret = []
+    for ev in allEvents # going backwards in time
+      if ev.cancelled
+        continue
+      ret.push(ev)
+      if ev.type == "scan" && ev.game == thisGame
+        break
+    ret.reverse() # now forwards in time
+    ret
 
 class Model
   constructor: ->
-    @latestScanEvent = ko.observable(null)
-    @recentUserData = ko.observable(null)
-
-    # events since the latest user scan (including that event),
-    # augmented with 'scoreDesc' and 'scoreWon'
-    @newScoreEvents = ko.observableArray([])
-
     @simUsers = ('/users/'+x for x in [1..5])
 
+    @newScoreEvents = new NewScoreEvents()
+    @recentUserData = ko.observable(null)
+    @userDataChanged = ko.observable(null) # just an event trigger
+
     ko.computed =>
-      @recentUserData(null)
-      if @latestScanEvent()?
-        reloadUser()    
+      @userDataChanged()
+      $.getJSON @newScoreEvents.currentUser(), (data) =>
+        @recentUserData(data)
+
+    ko.computed =>
+      if @newScoreEvents.currentUser()
+        $(".scorecard")
+          .addClass("scorecardAnim")
+          .show()
+      else
+        $(".scorecard")
+          .hide()
+          .removeClass("scorecardAnim")
+                        
   simUserScan: (who) =>
-    $.post("../../../events", {type: "scan", user: who, game: thisGame}, (ev) ->
-      console.log("test scan made event", ev)
-    )
+    $.post("../../../events", {type: "scan", user: who, game: thisGame}, (ev)->)
     
   bgImage: =>
     "bg/"+ gameId + ".jpg"
 
 model = new Model()
 
-openScorecard = () ->
-  $(".scorecard")
-    .addClass("scorecardAnim")
-    .show()
+$(".scorecard").hide()
 
-reloadUser = () ->
-  $.getJSON model.latestScanEvent().user, (data) =>
-    model.recentUserData(data)
-    
-# wrong; this should happen at startup and on reconnect
-$.getJSON(".././../../events/all", (data) ->
+reloadEvents = () ->     
+  $.getJSON(".././../../events/all", (data) ->
+    model.newScoreEvents.rebuild(data.events)
+  )
 
-  model.latestScanEvent(null)
-  acc = []
-  for ev in data.events # going backwards in time
-    acc.push(ev)
-    if ev.type == "scan" && ev.game == thisGame
-      model.latestScanEvent(ev)
-      break
-  if !model.latestScanEvent()
+new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
+  if ev.type == 'cancel'
+    reloadEvents()
     return
-
-  openScorecard()
-  reloadUser()
-  acc.reverse()
-  model.newScoreEvents([])
-  for ev in acc # forwards in time
-    if ev.game == thisGame && ev.user == model.latestScanEvent().user
-      console.log("nse", ev)
-      [ev.scoreDesc, ev.scoreWon] = switch ev.type
-        when "scan"
-          ["Points for playing", "??"]
-        when "achievement"
-          ["Got "+ev.won.label, summarizeWin(ev.won)]
-
-      model.newScoreEvents.push(ev)
-      
     
-)
-
-new reconnectingWebSocket(socketRoot + "/events", (msg) ->
-  console.log("newmsg", msg)
-#  if (msg.type == "scan" && msg.game == thisGame) || (msg.user == model.recentlyScannedUser())
-#    onScan(msg)
+  model.newScoreEvents.onNewEvent(ev)
+  if ev.user?
+    model.userDataChanged(new Date())
 )
 ko.applyBindings(model)

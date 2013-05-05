@@ -14,8 +14,8 @@ html
       legend Last scanned
       div
         | User: 
-        span(data-bind="text: lastUser")
-      div
+        span(data-bind="text: lastUser() || '(waiting for scan)'")
+      div(data-bind="if: lastUser()")
         | Scan time: 
         span(data-bind="text: scanAgo")
       div(data-bind="with: lastUserData")
@@ -26,26 +26,27 @@ html
         div
           | Score:
           span(data-bind="text: JSON.stringify(score)")
-    
-    fieldset
+        div
+          button(type="submit", data-bind="click: $root.bye") Clear this guest
+          
+    fieldset(data-bind="if: game()")
       legend Achievements for this game
-      div.achievement(data-bind="foreach: game() && game().achievements")
+      div.achievement(data-bind="foreach: game().achievements")
         div
           | Get 
           span(data-bind="text: label")
           |  &#8594;
           | win 
           span.summary(data-bind="text: $root.summarizeWin($data)")
-          
-        button(data-bind="with: $root.lastUserData, click: $root.award")
-          span(data-bind="text: label")
-          |  wins
-          | '
-          span(data-bind="text: $parent.label")
-          | '
+  
+          div(data-bind="if: $root.lastUserData")
+            button(data-bind="click: $root.award")
+              span(data-bind="text: $root.lastUserData().label")
+              |  wins
+              | '
+              span(data-bind="text: label")
+              | '
 
-          
-        
     p#status
 
     script(src='../../../3rdparty/jquery-1.9.1.min.js')

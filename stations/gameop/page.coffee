@@ -31,6 +31,9 @@ class Model
     })
 
   summarizeWin: window.summarizeWin
+  bye: () ->
+    # clearUser is not used; it's just to make the event more readable
+    $.post("../../../events", {type: "scan", game: thisGame, clearUser: true}, (ev) ->)
     
 model = new Model()
 
@@ -40,6 +43,9 @@ isScanEvent = (ev) ->
 userXhr = null
 reloadUser = () ->
     userXhr.abort() if userXhr?
+    if !model.lastUser()
+      model.lastUserData(null)
+      return
     userXhr = $.getJSON(model.lastUser(), (data) =>
       model.lastUserData(data)
     )
@@ -51,14 +57,14 @@ onEvent = (ev) ->
     reloadUser()
 
 
-# wrong; this should happen at startup and on reconnect
-$.getJSON(".././../../events/all", (data) ->
-  newestScan = _.find(data.events, isScanEvent)
-  if newestScan?
-    onEvent(newestScan)
-)
+readAll = () ->
+  $.getJSON(".././../../events/all", (data) ->
+    newestScan = _.find(data.events, isScanEvent)
+    if newestScan?
+      onEvent(newestScan)
+  )
 
-new reconnectingWebSocket(socketRoot + "/events", (msg) ->
+new ReconnectingWebSocket(socketRoot + "/events", readAll, (msg) ->
   onEvent(msg)
   if msg.type in ["scan", "achievement", "cancel"]
     reloadUser()

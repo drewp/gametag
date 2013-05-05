@@ -7,40 +7,8 @@ html
     link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
     link(rel='stylesheet', href='style.css')
   body
-    .grid
-      img(data-bind="attr: {src: bgImage()}")
-      .col.left
-      .col.score
-        .scanArea
-          .scan
-            .mode.idleMode
-              div Waiting for badge scan
-              div
-                img(src="../../../shared/noise.gif")
-            .mode.decodedMode(data-bind="visible: latestScanEvent")
-              div Identified
-              div(data-bind="with: recentUserData")
-                div
-                  img(data-bind="attr: {src: pic}")
-                div(data-bind="text: label")
-                span.rank Ensign
-                  span.have ⍟
-                  span.need ⍟⍟⍟⍟⍟⍟
-                div(data-bind="text:JSON.stringify($data)")
-        .scorecardEnvelope
-          .scorecard(data-bind="foreach: newScoreEvents")
-            div
-              span(data-bind="text: JSON.stringify($data)")
-              span(data-bind="text: scoreDesc")
-              | 
-              span(data-bind="text: scoreWon")
-            
-          //  div Points for playing: 440
-          //  div Won: egg
-          //  div Won: 250 points
-          //    | This game will give you ♆25 and upgrade your rank to
-          //    span.rank Private
-      .col.right
+    img.bg(data-bind="attr: {src: bgImage()}")
+
     .demoButtons
       | Simulate a scan from
       // ko foreach: simUsers
@@ -49,6 +17,37 @@ html
 
     p#status
 
+    div.fg        
+        .scanArea
+          .scan
+            .mode.idleMode(data-bind="visible: !newScoreEvents.eventList().length")
+              div Waiting for badge scan
+              div
+                img(src="../../../shared/noise.gif")
+            .mode.decodedMode(data-bind="visible: newScoreEvents.eventList().length > 0")
+              div Identified
+              div(data-bind="with: recentUserData")
+                div
+                  img(data-bind="attr: {src: pic}")
+                div(data-bind="text: label")
+                span.rank Ensign
+                  span.have ⍟
+                  span.need ⍟⍟⍟⍟⍟⍟
+                div
+                  | Current points: 
+                  span(data-bind="text: score.points")
+
+        .scorecardEnvelope
+          table.scorecard(data-bind="foreach: newScoreEvents.eventList()")
+            tr
+              td
+                i.icon-trophy
+              td
+                span(data-bind="text: scoreDesc")
+              td
+                span(data-bind="text: scoreWon")
+            
+      
     script(src='../../../3rdparty/jquery-1.9.1.min.js')
     script(src='../../../3rdparty/knockout-2.2.1.js')
     script(src='../../../3rdparty/underscore-1.4.4-min.js')

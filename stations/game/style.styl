@@ -1,3 +1,46 @@
+body
+  margin: 0
+  
+img.bg
+  position: absolute
+  z-index: -10
+  width: 100%
+  height: 100%
+
+
+div.fg
+  position: absolute
+  left: 50px
+  right: 50px
+  top: 200px
+  bottom: 200px
+  text-align: center
+
+div.fg > div
+  display: inline-block
+  
+.scanArea
+  width: 220px
+  height: 400px
+  background: #ccc
+  border-radius: 10px
+  border: 1px solid white
+  box-shadow: 5px 5px 20px black
+  overflow: hidden
+  .scan
+    overflow: hidden
+    font-size: 27px
+    .mode
+      x
+    .decodedMode
+      img
+        width: 190px
+
+    .idleMode
+      img
+        width: 190px
+        height: 140px
+
 .rank
   border-radius 3px
   display inline-block
@@ -12,87 +55,32 @@
   
 .need
   color rgba(121, 121, 24, 0.32)
-
-.col.left { -webkit-flex: 2; }
-.col.score { -webkit-flex: 5; }
-.col.right { -webkit-flex: 1; }
-  
-.grid
-  display: -webkit-flex
-  position: absolute
-  left: 0
-  right: 0
-  top: 0
-  bottom: 0px
-  font-size: 25px
-
-  > img
-    position: absolute
-    z-index: -10
-    width: 100%
-    height: 100%
-  
-  .score
-    display: -webkit-flex
-    //border: 2px solid blue
-    -webkit-align-self: center
-    background: rgba(0, 0, 0, 0.47);
-    box-shadow: 0 0 120px #000; 
-      
-    .scanArea
-      -webkit-flex: 0
-      z-index: 2
-        
-      .scan
-        background: #ccc
-        border-radius: 10px
-        overflow: hidden
-        -webkit-align-self: stretch
-        position: relative
-        width: 170px
-        height: 230px
-  
-        .mode
-          position: absolute
-          background: #ccc
-        .decodedMode
-          //opacity: .5
-          //-webkit-filter: blur(0px);
-          
-        .idleMode
-          img
-            width: 140px
-            height: 140px
     
-        img
-          width: 90px
-          height: 90px
+.score
+  //border: 2px solid blue
+  background: rgba(0, 0, 0, 0.47);
+  box-shadow: 0 0 120px #000; 
     
-  .scorecardEnvelope
-    z-index: 1
-    -webkit-flex: 1
-    margin-left: -24px;
-    margin: 18px 0;
-    overflow: hidden;
-  
-    .scorecard
-      background: #bbb
-      border-top-right-radius: 10px
-      border-bottom-right-radius: @border-top-right-radius
-      padding: 50px
-      position: relative
-      left: 0px
-    .scorecardAnim
-      -webkit-animation-duration: .5s;
-      -webkit-animation-name: openDrawer;
+.scorecardEnvelope
+  z-index: 1
 
+  overflow: hidden;
 
-  .scan
   .scorecard
-    border: 1px solid white
-    box-shadow: 5px 5px 20px black
-    overflow: hidden
-    text-align: center
+    background: #bbb
+    border-top-right-radius: 10px
+    border-bottom-right-radius: @border-top-right-radius
+    padding: 50px
+    position: relative
+    left: 0px
+  .scorecardAnim
+    -webkit-animation-duration: .5s;
+    -webkit-animation-name: openDrawer;
+
+
+.scan
+.scorecard
+  text-align: center
 
 @keyframes openDrawer
   from { left: -600px }

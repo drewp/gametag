@@ -20,7 +20,12 @@ exports.Events = (app, events, sockets) ->
     ev.t = new Date()
     self.events.insert(ev, {safe: true}, (err) ->
       throw err if err
-      self.sockets.sendToAll(ev)
+      augmented = _.extend({}, ev, {
+        uri: eventUriFromId(ev._id),
+        cancelled: !!ev.cancelled,
+        isNewDay: false, # don't care about incremental display of the date line
+      })
+      self.sockets.sendToAll(augmented)
       cb(null, ev)
     )
 
@@ -33,7 +38,7 @@ exports.Events = (app, events, sockets) ->
         augmented = _.extend(ev, {
                 uri: eventUriFromId(ev._id),
                 cancelled: !!ev.cancelled,
-                isNewDay: thisDay != prevDay,
+                isNewDay: prevDay? && thisDay != prevDay,
                 })
         prevDay = thisDay
         augmented

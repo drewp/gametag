@@ -27,10 +27,11 @@ model =
     {
         # see http://fortawesome.github.io/Font-Awesome/design.html
         enroll: 'icon-user'
-        scan: 'icon-play-circle'
+        scan: 'icon-qrcode'
         cancel: 'icon-ban-circle'
         pic: 'icon-camera'
         achievement: 'icon-money'
+        printError: 'icon-stethoscope'
     }[ev.type]
 
   eventRowClasses: (ev) ->
@@ -53,14 +54,21 @@ model =
       )
 
 readEvents = ->
+  # append all events to the model
   $.getJSON "../../events/all", {}, (data) ->
-    model.events(data.events)
-readEvents()
+    data.events.forEach((ev) -> model.events.push(ev))
 
-new reconnectingWebSocket(socketRoot + "/events", (msg) ->
-  console.log("msg", msg)
-  # this wants to be incremental and insert the new event on the top
-  readEvents()
+new ReconnectingWebSocket(
+  socketRoot + "/events",
+  (() -> model.events.removeAll(); readEvents()),
+  ((msg) ->
+    console.log("new ev", msg)
+    # prepend a new event to the model.
+    # Note that after reconnect, readEvents may be slow to add its
+    # events, and it may include some dups that we also added
+    # here. 
+    model.events.unshift(msg)
+  )
 )
         
 ko.applyBindings(model)
