@@ -7,9 +7,8 @@ html
     link(rel='stylesheet', href='style.css')
   body
     h1
-      | game operator console for
-      |  
-      span(data-bind="text: game() && game().label")
+      div Game operator console
+      div.gameName(data-bind="text: game() && game().label")
 
     fieldset
       legend Last scanned
@@ -30,16 +29,14 @@ html
     
     fieldset
       legend Achievements for this game
-      div(class="achievement", data-bind="foreach: game() && game().achievements")
-        h3
+      div.achievement(data-bind="foreach: game() && game().achievements")
+        div
           | Get 
           span(data-bind="text: label")
-
-        div.summary
-          | and win 
-          span(data-bind="text: $root.summarizeWin($data)")
+          |  &#8594;
+          | win 
+          span.summary(data-bind="text: $root.summarizeWin($data)")
           
-        div(data-bind="text: JSON.stringify($data)")
         button(data-bind="with: $root.lastUserData, click: $root.award")
           span(data-bind="text: label")
           |  wins
