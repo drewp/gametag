@@ -17,7 +17,7 @@ html
           th
       tbody(data-bind="foreach: events")
         tr(data-bind="css: $parent.eventRowClasses($data)")
-          td
+          td.time
             a(data-bind="attr: {href: uri}, text: $parent.prettyTime($data)")
           td.eventType
             i(data-bind="attr: {'class': $parent.iconClass($data)}")
