@@ -17,19 +17,29 @@ html
               div Waiting for badge scan
               div
                 img(src="../../../shared/noise.gif")
-            .mode.decodedMode(data-bind="visible: recentlyScannedUser")
+            .mode.decodedMode(data-bind="visible: latestScanEvent")
               div Identified
-              div
-                img(src='kablam_Girl_s_face_in_black_frame.png')
-              div username1
-              span.rank Ensign 
-                span.have ⍟
-                span.need ⍟⍟⍟⍟⍟⍟
+              div(data-bind="with: recentUserData")
+                div
+                  img(data-bind="attr: {src: pic}")
+                div(data-bind="text: label")
+                span.rank Ensign
+                  span.have ⍟
+                  span.need ⍟⍟⍟⍟⍟⍟
+                div(data-bind="text:JSON.stringify($data)")
         .scorecardEnvelope
-          .scorecard
+          .scorecard(data-bind="foreach: newScoreEvents")
             div
-              | This game will give you ♆25 and upgrade your rank to
-              span.rank Private
+              span(data-bind="text: JSON.stringify($data)")
+              span(data-bind="text: scoreDesc")
+              | 
+              span(data-bind="text: scoreWon")
+            
+          //  div Points for playing: 440
+          //  div Won: egg
+          //  div Won: 250 points
+          //    | This game will give you ♆25 and upgrade your rank to
+          //    span.rank Private
       .col.right
     .demoButtons
       | Simulate a scan from
@@ -41,6 +51,8 @@ html
 
     script(src='../../../3rdparty/jquery-1.9.1.min.js')
     script(src='../../../3rdparty/knockout-2.2.1.js')
+    script(src='../../../3rdparty/underscore-1.4.4-min.js')
     script(src='../../../shared/websocket.js')
+    script(src='../../../shared/points.js')
     script(src='../../../shared/netconfig.js')
     script(src="page.js")

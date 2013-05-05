@@ -19,16 +19,6 @@ class Model
       @game(data)
     )
     
-  summarizeWin: (ach) ->
-    ret = ""
-    if ach.desc?
-      ret += ach.desc
-    if ach.points?
-      if ret != ""
-        ret += " and "
-      ret += ""+ach.points+" points"
-    ret
-
   award: (ach, uiEvent) =>
     uiEvent.currentTarget.disabled = true
     $.ajax({
@@ -39,6 +29,8 @@ class Model
       success: (ev) ->
         uiEvent.currentTarget.disabled = false
     })
+
+  summarizeWin: window.summarizeWin
     
 model = new Model()
 
