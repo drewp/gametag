@@ -1,6 +1,7 @@
 doctype html
 html
   head
+    meta(charset="utf-8")
     title game station
     link(rel='stylesheet', type='text/css', href='../../../shared/style.css')
     link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
@@ -14,6 +15,8 @@ html
           .scan
             .mode.idleMode
               div Waiting for badge scan
+              div
+                img(src="../../../shared/noise.gif")
             .mode.decodedMode(data-bind="visible: recentlyScannedUser")
               div Identified
               div
