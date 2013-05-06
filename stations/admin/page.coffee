@@ -58,6 +58,10 @@ readEvents = ->
   $.getJSON "../../events/all", {}, (data) ->
     data.events.forEach((ev) -> model.events.push(ev))
 
+ko.computed ->
+  model.events()
+  $("img").lazyload()
+  
 new ReconnectingWebSocket(
   socketRoot + "/events",
   (() -> model.events.removeAll(); readEvents()),
