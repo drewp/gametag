@@ -1,6 +1,7 @@
 gameId = window.location.pathname.split("/")[3]
 thisGame = "/games/"+gameId
 
+thisGameData = null
 
 class NewScoreEvents
   # tracks the events that affect the current player on this play of the game
@@ -47,7 +48,7 @@ class NewScoreEvents
   _augment: (ev) =>
     [ev.scoreDesc, ev.scoreWon] = switch ev.type
       when "scan"
-        ["Points for playing", "??"]
+        ["Points for playing", thisGameData?.pointsForPlaying]
       when "achievement"
         ["Got "+ev.won.label, summarizeWin(ev.won)]
     ev
@@ -92,7 +93,7 @@ class Model
     $.post("../../../events", {type: "scan", user: who, game: thisGame}, (ev)->)
     
   bgImage: =>
-    "bg/"+ gameId + ".jpg"
+    "bg/" + gameId + ".jpg"
 
 model = new Model()
 
@@ -103,13 +104,17 @@ reloadEvents = () ->
     model.newScoreEvents.rebuild(data.events)
   )
 
-new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
-  if ev.type == 'cancel'
-    reloadEvents()
-    return
-    
-  model.newScoreEvents.onNewEvent(ev)
-  if ev.user?
-    model.userDataChanged(new Date())
-)
-ko.applyBindings(model)
+$.getJSON thisGame, (data) =>
+  thisGameData = data
+  # slightly easier (but slower) to get the game data before anything else
+
+  new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
+    if ev.type == 'cancel'
+      reloadEvents()
+      return
+      
+    model.newScoreEvents.onNewEvent(ev)
+    if ev.user?
+      model.userDataChanged(new Date())
+  )
+  ko.applyBindings(model)
