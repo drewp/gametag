@@ -9,6 +9,7 @@ Sockets = require("./sockets.js").Sockets
 _ = require("../3rdparty/underscore-1.4.4-min.js")
 async = require("../3rdparty/async-0.2.7.js")
 Events = require("./events.js").Events
+printSvgBody = require("./print.js").printSvgBody
 exec = require('child_process').exec
 
 app.engine("jade", build.jade)
@@ -185,35 +186,12 @@ openMongo (games, allGames, events) ->
     respondFile(res, "./pic/", req.params.f)
 
   app.post "/print", (req, res) ->
-    d = require('domain').create()
-    d.on('error', (err) ->
-          e.newEvent("printError",
-            {error: err},
-            (err, ev) -> res.json(500, ev)))
-    d.run =>
-      base = "pdf/" + (+new Date())
-      out = fs.createWriteStream(base + ".svg")
-      req.pipe(out)
-
-      req.on('end', () ->
-          exec("inkscape "+
-               "--export-pdf="+base+".pdf "+
-               "--export-dpi=300 "+base+".svg",
-               (err, stdout, stderr) ->
-                 if err?
-                   [err.stdout, err.stderr] = [stdout, stderr]
-                   throw err
-
-                 exec("lpr "+base+".pdf", (err, stdout, stderr) ->
-                   if err?
-                     [err.stdout, err.stderr] = [stdout, stderr]
-                     throw err
-
-                   e.newEvent("print", {}, (err, ev) -> res.json(200, ev))
-                 )
-          )
-      )
-
+    printSvgBody(req, "printername1", (err, jobName) ->
+      if err?
+        e.newEvent("printError", {error: err}, (err, ev) -> res.json(500, ev))
+      else
+        e.newEvent("print", {jobName: jobName}, (err, ev) -> res.json(200, ev))
+    )
 
   app.get "/shared/:f", (req, res) ->
     respondFile(res, "./shared/", req.params.f)
