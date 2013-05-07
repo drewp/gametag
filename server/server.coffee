@@ -10,6 +10,9 @@ _ = require("../3rdparty/underscore-1.4.4-min.js")
 async = require("../3rdparty/async-0.2.7.js")
 Events = require("./events.js").Events
 printSvgBody = require("./print.js").printSvgBody
+usersMod = require("./users.js")
+[getAllUsers, findOneUser] = [usersMod.getAllUsers, usersMod.findOneUser]
+respondFile = require("./fileserve.js").respondFile
 exec = require('child_process').exec
 
 app.engine("jade", build.jade)
@@ -35,29 +38,23 @@ openMongo = (cb) ->
           throw err if err
           cb(games, allGames, events)
 
-precompiledName = (requestedName) ->
-  requestedName
-    .replace(".css", ".styl")
-    .replace(".js", ".coffee")
-    .replace(".html", ".jade")
-
-respondFile = (res, prefix, requestedPath) ->
-    if requestedPath == ""
-      requestedPath = "index.html"
-    res.contentType(requestedPath)
-    if requestedPath.match(/\.(jpg|png|webm|svg|gif)$/)
-      # probably res.render could be made to handle this
-      res.sendfile(prefix + precompiledName(requestedPath))
-    else
-      res.render(prefix + precompiledName(requestedPath))
-
 openMongo (games, allGames, events) ->
   sockets = new Sockets(server, "/events")
 
   e = new Events(app, events, sockets)
   e.syncPicEvents()
 
-  e.addRequestHandlers()
+  app.delete "/events/:id", (req, res) ->
+    e.cancelEvent(req.params.id, (err) ->
+      return res.send(500) if err?
+      res.send(204)
+    )
+    
+  app.patch "/events/:id", (req, res) ->
+    e.patchEvent(req.params.id, req.body, (err) ->
+      return res.send(500) if err?
+      res.send(204)
+    )
 
   app.get "/events/all", (req, res) ->
     # newest first
@@ -73,77 +70,33 @@ openMongo (games, allGames, events) ->
 
   app.get "/", (req, res) ->
     games.find().toArray (err, results) ->
-      throw err if err
+      return res.send(500) if err?
       for g in results
         g.uri = "/stations/game/"+g._id+"/"
         g.gameOp = "/stations/gameop/"+g._id+"/"
       res.render("stations/proto/index.jade", {
-        title: "Consolidate.js",
+        title: "gametag proto page",
         games: results
       })
   app.get "/page.js", (req, res) -> respondFile(res, 'stations/proto/', 'page.js')
 
-  computeScore = (events, allGames, user, cb) ->
-    gameByUri = {}
-    for g in allGames
-      gameByUri["/games/"+g._id] = g
-
-    events.find({
-        user: user,
-        type: {$in: ["scan", "achievement"]},
-        cancelled: {$ne: true}
-      },
-      {sort: {t:1}}
-      ).toArray((err, evs) ->
-        score = {points: 0, games: 0}
-        async.each(evs, ((ev, cb) ->
-            console.log("consider", ev)
-            switch ev.type
-              when "scan"
-                score.points += gameByUri[ev.game].pointsForPlaying
-                score.games += 1
-              when "achievement"
-                score.points += ev.won.points if ev.won.points?
-            cb(null)
-          ),
-          ((err) ->
-            throw err if err?
-            cb(score)
-          )) 
-            
-      )
-
   app.get "/users", (req, res) ->
-    events.find({type:"enroll", cancelled: {$ne: true}}).toArray (err, enrolls) ->
+    getAllUsers(events, allGames, (err, users) ->
       throw err if err?
-      async.map(enrolls,
-                ((enrollEvent, cb) ->
-                  computeScore(events, allGames, enrollEvent.user, (score) ->
-                    enrollEvent.score = score
-                    cb(null, enrollEvent)
-                  )
-                 ),
-                ((err, users) ->
-                  throw err if err?
-                  res.json(200, {users: users})
-                  )
-      )
-
+      res.json(200, {users: users})
+    )
+    
   app.get "/users/:u", (req, res) ->
-    uri = "/users/"+req.params.u
-    events.findOne({type:"enroll", user: uri, cancelled: {$ne: true}}, (err, doc) ->
+    uri = "/users/" + req.params.u
+    findOneUser(events, allGames, uri, (err, userDoc) ->
       if err?
         res.send(500)
-        return
-      if not doc?
+      else if not userDoc?
         res.send(404)
-        return
-      computeScore(events, allGames, uri, (score) ->
-        doc.score = score
-        res.json(200, doc)
-      )
+      else
+        res.json(200, userDoc)
     )
-
+    
   app.get "/games/:g", (req, res) ->
     res.json(200, _.find(allGames, (g) -> g._id == req.params.g))
 

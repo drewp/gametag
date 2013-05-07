@@ -14,7 +14,11 @@ run_server_with_watch:
 	# this is not discovering other deps as advertised on https://github.com/fgnass/node-dev
 	node_modules/node-dev/bin/node-dev server/server.coffee
 
-server/server.js: server/sockets.js server/events.js
+server/server.js: server/sockets.js \
+                  server/events.js \
+                  server/print.js \
+                  server/users.js \
+                  server/fileserve.js
 
 import_game_data_to_mongo:
 	mongoimport --host bang --db gametag --collection games --drop --jsonArray --file startup/games.json

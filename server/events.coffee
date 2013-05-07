@@ -5,6 +5,8 @@ _ = require("../3rdparty/underscore-1.4.4-min.js")
 mongo = require("mongodb")
 
 exports.Events = (app, events, sockets) ->
+  # operations on the events collection, including sending new events
+  # to all websocket listeners
   self = this
   @app = app
   @events = events
@@ -36,10 +38,10 @@ exports.Events = (app, events, sockets) ->
       cb(results.map((ev) ->
         thisDay = ev.t.toDateString()
         augmented = _.extend(ev, {
-                uri: eventUriFromId(ev._id),
-                cancelled: !!ev.cancelled,
-                isNewDay: prevDay? && thisDay != prevDay,
-                })
+          uri: eventUriFromId(ev._id),
+          cancelled: !!ev.cancelled,
+          isNewDay: prevDay? && thisDay != prevDay,
+          })
         prevDay = thisDay
         augmented
       ))
@@ -78,30 +80,23 @@ exports.Events = (app, events, sockets) ->
       throw err if err?
       cb(ev)
     )
+
+  @cancelEvent = (eventId, cb) =>
+    _id = mongo.ObjectID(eventId)
+    @events.update({_id: _id}, {$set: {cancelled: true}}, (err) =>
+      @newEvent("cancel",
+               {target: eventUriFromId(req.params.id), setTo: true},
+               cb)
+    )
+
+  @patchEvent = (eventId, body, cb) =>
+    # so far this just supports replacing the 'cancelled' field
+    spec = {_id: mongo.ObjectID(eventId)}
+    action = {$set: {cancelled: body.cancelled}}
+    done = (err) =>
+      @newEvent("cancel",
+                {target: eventUriFromId(eventId), now: body.cancelled},
+                cb)
+    @events.update(spec, action, done)
     
-
-  @addRequestHandlers = () ->
-    events = @events
-    newEvent = @newEvent
-
-    # the registration lines should be moved to server.coffee
-    self.app.delete "/events/:id", (req, res) ->
-      events.update({_id: mongo.ObjectID(req.params.id)}, {$set: {cancelled: true}}, (err) ->
-        newEvent("cancel",
-                 {target: eventUriFromId(req.params.id), setTo: true}, 
-                 (err) ->
-                   res.send(204)
-        )
-      )
-
-    self.app.patch "/events/:id", (req, res) ->
-      # so far this just supports replacing the 'cancelled' field
-      events.update({_id: mongo.ObjectID(req.params.id)},
-                    {$set: {cancelled: req.body.cancelled}}, (err) ->
-                      newEvent("cancel",
-                               {target: eventUriFromId(req.params.id), now: req.body.cancelled}, 
-                               (err) ->
-                                 res.send(204)
-                      )
-      )
   self
