@@ -1,5 +1,5 @@
 
 # this is just to test the websocket connection
-new ReconnectingWebSocket(socketRoot + "/events", () ->, (msg) ->)
+new ReconnectingWebSocket(socketRoot + "/events", (() ->), ((msg) ->))
 
         
