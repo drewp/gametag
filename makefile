@@ -18,7 +18,8 @@ server/server.js: server/sockets.js \
                   server/events.js \
                   server/print.js \
                   server/users.js \
-                  server/fileserve.js
+                  server/fileserve.js \
+                  shared/identifiers.js
 
 import_game_data_to_mongo:
 	mongoimport --host bang --db gametag --collection games --drop --jsonArray --file startup/games.json

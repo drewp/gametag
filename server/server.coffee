@@ -1,19 +1,20 @@
 fs = require('fs')
 express = require("express")
 build = require("consolidate-build")
+exec = require('child_process').exec
 mongo = require("mongodb")
 mime = require('connect').mime
 app = express()
 server = require("http").createServer(app)
-Sockets = require("./sockets.js").Sockets
-_ = require("../3rdparty/underscore-1.4.4-min.js")
-async = require("../3rdparty/async-0.2.7.js")
-Events = require("./events.js").Events
+_            = require("../3rdparty/underscore-1.4.4-min.js")
+async        = require("../3rdparty/async-0.2.7.js")
+identifiers  = require("../shared/identifiers.js")
+Sockets      = require("./sockets.js").Sockets
+Events       = require("./events.js").Events
 printSvgBody = require("./print.js").printSvgBody
-usersMod = require("./users.js")
+usersMod     = require("./users.js")
 [getAllUsers, findOneUser] = [usersMod.getAllUsers, usersMod.findOneUser]
-respondFile = require("./fileserve.js").respondFile
-exec = require('child_process').exec
+respondFile  = require("./fileserve.js").respondFile
 
 app.engine("jade", build.jade)
 app.engine("styl", build.stylus)
@@ -45,13 +46,13 @@ openMongo (games, allGames, events) ->
   e.syncPicEvents()
 
   app.delete "/events/:id", (req, res) ->
-    e.cancelEvent(req.params.id, (err) ->
+    e.cancelEvent(identifiers.absolute(req.url), (err) ->
       return res.send(500) if err?
       res.send(204)
     )
     
   app.patch "/events/:id", (req, res) ->
-    e.patchEvent(req.params.id, req.body, (err) ->
+    e.patchEvent(identifiers.absolute(req.url), req.body, (err) ->
       return res.send(500) if err?
       res.send(204)
     )
@@ -63,10 +64,6 @@ openMongo (games, allGames, events) ->
   app.post "/events", (req, res) ->
     body = req.body
     e.postEvent(body, (ev) -> res.json(200, ev))
-
-  nextUserId = (cb) ->
-    # this doesn't care about whether events were cancelled
-    events.find({type: "enroll"}).count(cb)
 
   app.get "/", (req, res) ->
     games.find().toArray (err, results) ->
@@ -87,7 +84,7 @@ openMongo (games, allGames, events) ->
     )
     
   app.get "/users/:u", (req, res) ->
-    uri = "/users/" + req.params.u
+    uri = identifiers.absolute(req.url)
     findOneUser(events, allGames, uri, (err, userDoc) ->
       if err?
         res.send(500)
@@ -98,12 +95,17 @@ openMongo (games, allGames, events) ->
     )
     
   app.get "/games/:g", (req, res) ->
-    res.json(200, _.find(allGames, (g) -> g._id == req.params.g))
+    r = identifiers.absolute(req.url)
+    res.json(200, _.find(allGames, (g) -> identifiers.gameUri(g._id) == r))
+
+  nextUserId = (cb) ->
+    # this doesn't care about whether events were cancelled
+    events.find({type: "enroll"}).count(cb)
 
   app.post "/users", (req, res) ->
     nextUserId((err, newId) ->
       e.newEvent("enroll",
-               {pic: req.body.pic, user: "/users/" + newId, label: req.body.label},
+               {pic: req.body.pic, user: identifiers.newUserUri(newId), label: req.body.label},
                (err, ev) ->
                  throw err if err
                  sockets.sendToAll({"event":"enroll"})
@@ -118,20 +120,20 @@ openMongo (games, allGames, events) ->
   
   app.post "/scans", (req, res) ->
     e.newEvent("scan", {user: req.body.qr, game: req.body.game}, (err, doc) ->
-                   throw err if err
-                   res.json(200, doc)
+      throw err if err
+      res.json(200, doc)
     )
 
   app.post "/pic", (req, res) ->
     # POST a jpeg image and get back a copy of the event that
     # announces your new pic.
-    outBasename = (+new Date())+".jpg"
-
-    out = fs.createWriteStream("pic/"+outBasename)
+    writeFilename = "pic/" + (+new Date())+".jpg"
+    out = fs.createWriteStream(writeFilename)
     req.pipe(out)
     req.on('end', () ->
-        e.newEvent("pic", {"pic": "/pic/"+outBasename}, (err, ev) ->
-          res.json(200, ev)
+        e.newEvent("pic", {"pic": identifiers.picUri(writeFilename)},
+          (err, ev) ->
+            res.json(200, ev)
         )
     )
 

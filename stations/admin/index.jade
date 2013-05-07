@@ -18,16 +18,16 @@ html
       tbody(data-bind="foreach: events")
         tr(data-bind="css: $parent.eventRowClasses($data)")
           td.time
-            a(data-bind="attr: {href: uri}, text: $parent.prettyTime($data)")
+            a(data-bind="attr: {href: identifiers.localSite(uri)}, text: $parent.prettyTime($data)")
           td.eventType(data-bind="attr: {title: 'type: '+type}")
             i(data-bind="attr: {'class': $parent.iconClass($data)}")
             span(data-bind="text: type.replace('achievement','achv')")
           td
             span(data-bind="with: $data.pic")
-              a(data-bind="attr: {href: $data}")
+              a(data-bind="attr: {href: identifiers.localSite($data)}")
                 img#thumb(data-bind="attr: {'data-original': $data}")
             span(data-bind="with: $root.eventQr($data)")
-              a(data-bind="attr: {href: $data}") QR
+              a(data-bind="attr: {href: identifiers.localSite($data)}") QR
               
             span(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
           td
@@ -48,4 +48,5 @@ html
     script(src='../../3rdparty/jquery.lazyload.min.js')
     script(src='../../shared/websocket.js')
     script(src='../../shared/netconfig.js')
+    script(src='../../shared/identifiers.js')
     script(src="page.js")

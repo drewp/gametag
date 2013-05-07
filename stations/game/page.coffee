@@ -1,5 +1,5 @@
 gameId = window.location.pathname.split("/")[3]
-thisGame = "/games/"+gameId
+thisGame = identifiers.gameUri(gameId)
 
 thisGameData = null
 
@@ -68,7 +68,7 @@ class NewScoreEvents
 
 class Model
   constructor: ->
-    @simUsers = ('/users/'+x for x in [1..5])
+    @simUsers = (identifiers.absolute('/users/'+x) for x in [1,2,3,12,13])
 
     @newScoreEvents = new NewScoreEvents()
     @recentUserData = ko.observable(null)
@@ -104,13 +104,14 @@ reloadEvents = () ->
     model.newScoreEvents.rebuild(data.events)
   )
 
-$.getJSON thisGame, (data) =>
+$.getJSON identifiers.localSite(thisGame), (data) =>
   thisGameData = data
   # slightly easier (but slower) to get the game data before anything else
 
   new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
     if ev.type == 'cancel'
       reloadEvents()
+      model.userDataChanged(new Date()) 
       return
       
     model.newScoreEvents.onNewEvent(ev)

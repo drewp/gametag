@@ -187,7 +187,7 @@ class Model
         label: @enteredName(),
         pic: @currentPicUri()
       },
-      ((data) => @currentUserUri("https://gametag.bigast.com"+data.user))
+      ((data) => @currentUserUri(data.user))
     )
 
   
@@ -196,5 +196,5 @@ camera = new Camera(document.location.search == "?cam=demo", model.picCopying)
 badge = new Badge(-> model.reset()) 
 model.setBadge(badge)
 
-new ReconnectingWebSocket(socketRoot + "/events", () ->, (msg) ->)
+new ReconnectingWebSocket(socketRoot + "/events", (() ->), ((msg) ->))
 ko.applyBindings(model)

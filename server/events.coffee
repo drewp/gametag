@@ -3,6 +3,7 @@ path = require('path')
 async = require("../3rdparty/async-0.2.7.js")
 _ = require("../3rdparty/underscore-1.4.4-min.js")
 mongo = require("mongodb")
+identifiers = require("../shared/identifiers.js")
 
 exports.Events = (app, events, sockets) ->
   # operations on the events collection, including sending new events
@@ -12,18 +13,16 @@ exports.Events = (app, events, sockets) ->
   @events = events
   @sockets = sockets
 
-  eventUriFromId = (_id) ->
-    '/events/' + _id # wrong abs uri
-
   @newEvent = (type, opts, cb) =>
     # callback gets the complete event, with type and t included
     ev = _.clone(opts)
     ev.type = type
     ev.t = new Date()
+    ev._id = identifiers.newDocId()
     self.events.insert(ev, {safe: true}, (err) ->
       throw err if err
       augmented = _.extend({}, ev, {
-        uri: eventUriFromId(ev._id),
+        uri: ev._id,
         cancelled: !!ev.cancelled,
         isNewDay: false, # don't care about incremental display of the date line
       })
@@ -38,7 +37,7 @@ exports.Events = (app, events, sockets) ->
       cb(results.map((ev) ->
         thisDay = ev.t.toDateString()
         augmented = _.extend(ev, {
-          uri: eventUriFromId(ev._id),
+          uri: ev._id,
           cancelled: !!ev.cancelled,
           isNewDay: prevDay? && thisDay != prevDay,
           })
@@ -57,7 +56,7 @@ exports.Events = (app, events, sockets) ->
 
       eventFromFile = (f, cb) =>
         picPath = path.join("pic/", f)
-        picUri = "/" + picPath
+        picUri = identifiers.picUri(picPath)
         fs.stat(picPath, (err, stats) ->
           cb(err, {type: "pic", t: stats.mtime, pic: picUri}))
           
@@ -81,21 +80,18 @@ exports.Events = (app, events, sockets) ->
       cb(ev)
     )
 
-  @cancelEvent = (eventId, cb) =>
-    _id = mongo.ObjectID(eventId)
-    @events.update({_id: _id}, {$set: {cancelled: true}}, (err) =>
-      @newEvent("cancel",
-               {target: eventUriFromId(req.params.id), setTo: true},
-               cb)
+  @cancelEvent = (eventUri, cb) =>
+    @events.update({_id: eventUri}, {$set: {cancelled: true}}, (err) =>
+      @newEvent("cancel", {target: eventUri, setTo: true}, cb)
     )
 
-  @patchEvent = (eventId, body, cb) =>
+  @patchEvent = (eventUri, body, cb) =>
     # so far this just supports replacing the 'cancelled' field
-    spec = {_id: mongo.ObjectID(eventId)}
+    spec = {_id: eventUri}
     action = {$set: {cancelled: body.cancelled}}
     done = (err) =>
       @newEvent("cancel",
-                {target: eventUriFromId(eventId), now: body.cancelled},
+                {target: eventUri, now: body.cancelled},
                 cb)
     @events.update(spec, action, done)
     

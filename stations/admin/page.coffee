@@ -3,7 +3,7 @@ model =
 
   deleteUser: (user) =>
     $.ajax(
-      url: user.uri
+      url: identifiers.localSite(user.uri)
       type: "DELETE"
       success: () ->
         console.log("del")
@@ -18,8 +18,7 @@ model =
 
   eventQr: (ev) ->
     if ev.user
-      uri = "https://gametag.bigast.com" + ev.user
-      "https://chart.googleapis.com/chart?chs=250x250&cht=qr&"+$.param({chl: uri})
+      "https://chart.googleapis.com/chart?chs=250x250&cht=qr&"+$.param({chl: ev.user})
     else
       null
 
@@ -42,12 +41,12 @@ model =
   toggleCancelEvent: (ev) ->
     if !ev.cancelled # note: works off our copy, not the real event state
       $.ajax(
-        url: ev.uri
+        url: identifiers.localSite(ev.uri)
         type: "DELETE"
       )
     else
       $.ajax(
-        url: ev.uri
+        url: identifiers.localSite(ev.uri)
         type: "PATCH"
         data: JSON.stringify({cancelled: false}),
         contentType: 'application/json',

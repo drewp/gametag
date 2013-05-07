@@ -2,11 +2,13 @@ domainCreate = require('domain').create
 fs = require('fs')
 exec = require('child_process').exec
 
-lpr = (filename, destinationPrinter, jobName) ->
-  exec("lpr " +
+lpr = (filename, destinationPrinter, jobName, cb) ->
+  cmdline = "lpr " +
        filename +
        " -P " + destinationPrinter +
-       " -T " + jobName,
+       " -T " + jobName
+  console.log("run: "+cmdline)
+  exec(cmdline,
        (err, stdout, stderr) ->
          if err?
            [err.stdout, err.stderr] = [stdout, stderr]
@@ -16,13 +18,19 @@ lpr = (filename, destinationPrinter, jobName) ->
   )
 
 exports.printSvgBody = (inputStream, destinationPrinter, cb) ->
+  this is broken
   domain = domainCreate()
-  domain.on('error', (err) -> cb(err, null))
+  domain.on('error', (err) ->
+    console.log("domain error: " + err)
+    cb(err, null)
+  )
 
+  console.log("run in domain")
   domain.run =>
     base = "pdf/" + (+new Date())
     out = fs.createWriteStream(base + ".svg")
-    req.pipe(out)
+    console.log("pipe to svg file")
+    inputStream.pipe(out)
 
     cmdline = ("inkscape "+
            "--export-pdf="+base+".pdf "+
@@ -36,5 +44,8 @@ exports.printSvgBody = (inputStream, destinationPrinter, cb) ->
         jobName = "gametag" + (+new Date())
         lpr(base + ".pdf", destinationPrinter, jobName, cb)
     )
-    req.on('end', () -> exec(cmdline, onExec))
+    inputStream.on('end', () ->
+      console.log("run inkscape to make pdf")
+      exec(cmdline, onExec)
+    )
 

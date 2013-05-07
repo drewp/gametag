@@ -26,8 +26,8 @@ html
         div
           | Score:
           span(data-bind="text: JSON.stringify(score)")
-        div
-          button(type="submit", data-bind="click: $root.bye") Clear this guest
+      div
+        button(type="submit", data-bind="click: $root.bye") Clear this guest
           
     fieldset(data-bind="if: game()")
       legend Achievements for this game
@@ -55,4 +55,5 @@ html
     script(src='../../../shared/websocket.js')
     script(src='../../../shared/points.js')
     script(src='../../../shared/netconfig.js')
+    script(src='../../../shared/identifiers.js')
     script(src="page.js")

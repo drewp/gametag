@@ -1,6 +1,5 @@
 gameId = window.location.pathname.split("/")[3]
-thisGame = "/games/"+gameId
-
+thisGame = identifiers.gameUri(gameId)
 
 class Model
   constructor: ->
@@ -15,7 +14,7 @@ class Model
       @now()
       moment(@lastScanTime()).fromNow()
     )
-    $.getJSON(thisGame, (data) =>
+    $.getJSON(identifiers.localSite(thisGame), (data) =>
       @game(data)
     )
     
@@ -38,7 +37,7 @@ class Model
 model = new Model()
 
 isScanEvent = (ev) ->
-  ev.type == "scan" && ev.game in [thisGame, "https://gametag.bigast.com"+thisGame+"/"]
+  ev.type == "scan" && ev.game == thisGame
 
 userXhr = null
 reloadUser = () ->
@@ -46,7 +45,7 @@ reloadUser = () ->
     if !model.lastUser()
       model.lastUserData(null)
       return
-    userXhr = $.getJSON(model.lastUser(), (data) =>
+    userXhr = $.getJSON(identifiers.localSite(model.lastUser()), (data) =>
       model.lastUserData(data)
     )
 
@@ -58,7 +57,7 @@ onEvent = (ev) ->
 
 
 readAll = () ->
-  $.getJSON(".././../../events/all", (data) ->
+  $.getJSON("../../../events/all", (data) ->
     newestScan = _.find(data.events, isScanEvent)
     if newestScan?
       onEvent(newestScan)
