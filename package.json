@@ -9,6 +9,7 @@
       "mongodb" : "1.2.14",
       "nodefront" : "1.0.7",
       "then-jade" : "1.1.0",
+      "base-converter": "1.1.2",
       "nodemon" : "0.7.6",
       "connect" : "2.7.4",
       "stylus" : "0.32.1",

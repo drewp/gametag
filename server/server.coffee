@@ -6,6 +6,7 @@ mongo = require("mongodb")
 mime = require('connect').mime
 app = express()
 server = require("http").createServer(app)
+decToGeneric = require("base-converter").decToGeneric
 _            = require("../3rdparty/underscore-1.4.4-min.js")
 async        = require("../3rdparty/async-0.2.7.js")
 identifiers  = require("../shared/identifiers.js")
@@ -27,6 +28,12 @@ app.set('views', __dirname + "/..")
 app.use("/static", express.static(__dirname));
 app.use(express.logger())
 app.use(express.bodyParser())
+
+randomId = (nChars) ->
+    alpha = "0123456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"
+    max = Math.pow(alpha.length, nChars)
+    x = Math.floor(Math.random() * max)
+    decToGeneric(x, alpha)
 
 openMongo = (cb) ->
   client = new mongo.Db('gametag',
@@ -128,19 +135,19 @@ openMongo (games, gameByUri, events) ->
     events.find({type: "enroll"}).count(cb)
 
   app.post "/users", (req, res) ->
-    nextUserId((err, newId) ->
-      e.newEvent("enroll",
-               {
-                 pic: req.body.pic
-                 user: identifiers.newUserUri(newId)
-                 label: req.body.label
-                 ageCategory: req.body.ageCategory
-                }, (err, ev) ->
-                 throw err if err
-                 sockets.sendToAll({"event":"enroll"})
-                 res.json(200, ev)
-      )
+    newId = randomId(6)
+    e.newEvent("enroll",
+             {
+               pic: req.body.pic
+               user: identifiers.newUserUri(newId)
+               label: req.body.label
+               ageCategory: req.body.ageCategory
+              }, (err, ev) ->
+               throw err if err
+               sockets.sendToAll({"event":"enroll"})
+               res.json(200, ev)
     )
+
 
   # GET /users/:id is what guests will revisit from their own badges later
 
@@ -156,7 +163,7 @@ openMongo (games, gameByUri, events) ->
   app.post "/pic", (req, res) ->
     # POST a jpeg image and get back a copy of the event that
     # announces your new pic.
-    writeFilename = "pic/" + (+new Date())+".jpg"
+    writeFilename = "pic/" + randomId(12) + ".jpg"
     out = fs.createWriteStream(writeFilename)
     req.pipe(out)
     req.on('end', () ->
