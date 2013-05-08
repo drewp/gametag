@@ -77,6 +77,8 @@ class Model
     @makeUserEnabled = ko.computed(=> !@currentUserUri())
     @printEnabled = ko.computed(=> @currentUserUri())
     @enteredName = ko.observable("")
+    @ageCategory = ko.observable(null)
+    @ageCategories = ["elementary", "middle", "high"]
 
   setBadge: =>
     ko.computed =>
@@ -115,7 +117,8 @@ class Model
       {
         station: "enroll",
         label: @enteredName(),
-        pic: @currentPicUri()
+        pic: @currentPicUri(),
+        ageCategory: @ageCategory()
       },
       ((data) => @currentUserUri(data.user))
     )

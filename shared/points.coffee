@@ -1,4 +1,4 @@
-window.summarizeWin = (ach) ->
+summarizeWin = (ach) ->
   ret = ""
   if ach.desc?
     ret += ach.desc
@@ -7,3 +7,8 @@ window.summarizeWin = (ach) ->
       ret += " and "
     ret += ""+ach.points+" points"
   ret
+
+if window?
+  window.summarizeWin = summarizeWin
+else
+  exports.summarizeWin = summarizeWin

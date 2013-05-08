@@ -9,12 +9,14 @@ server = require("http").createServer(app)
 _            = require("../3rdparty/underscore-1.4.4-min.js")
 async        = require("../3rdparty/async-0.2.7.js")
 identifiers  = require("../shared/identifiers.js")
+points       = require("../shared/points.js")
 Sockets      = require("./sockets.js").Sockets
 Events       = require("./events.js").Events
 printSvgBody = require("./print.js").printSvgBody
 usersMod     = require("./users.js")
 [getAllUsers, findOneUser] = [usersMod.getAllUsers, usersMod.findOneUser]
 respondFile  = require("./fileserve.js").respondFile
+userView     = require("./userview.js").userView
 
 app.engine("jade", build.jade)
 app.engine("styl", build.stylus)
@@ -35,11 +37,15 @@ openMongo = (cb) ->
     client.collection 'games', (err, games) ->
       throw err if err
       games.find({}).toArray (err, allGames) ->
+        gameByUri = {}
+        for g in allGames
+          gameByUri[identifiers.gameUri(g._id)] = g
+
         client.collection 'events', (err, events) ->
           throw err if err
-          cb(games, allGames, events)
+          cb(games, gameByUri, events)
 
-openMongo (games, allGames, events) ->
+openMongo (games, gameByUri, events) ->
   sockets = new Sockets(server, "/events")
 
   e = new Events(app, events, sockets)
@@ -78,25 +84,44 @@ openMongo (games, allGames, events) ->
   app.get "/page.js", (req, res) -> respondFile(res, 'stations/proto/', 'page.js')
 
   app.get "/users", (req, res) ->
-    getAllUsers(events, allGames, (err, users) ->
+    getAllUsers(events, gameByUri, (err, users) ->
       throw err if err?
       res.json(200, {users: users})
     )
     
+  app.get "/userview.js", (req, res) -> respondFile(res, 'stations/userview/', 'page.js')
+
+  userJson = (uri, res) ->
+        findOneUser(events, gameByUri, uri, (err, userDoc) ->
+          return res.send(500) if err?
+          return res.send(404) if not userDoc?
+          res.json(200, userDoc)
+        )
+
+  app.get "/users/:u.json", (req, res) ->
+    uri = identifiers.absolute(req.url.replace(/\.json$/, ""))
+    res.set("Content-Location", uri+".json")
+    userJson(uri, res)
+    
+  app.get "/users/:u.html", (req, res) ->
+    uri = identifiers.absolute(req.url.replace(/\.html$/, ""))
+    res.set("Content-Location", uri+".json")
+    userView(events, gameByUri, uri, res)
+
   app.get "/users/:u", (req, res) ->
     uri = identifiers.absolute(req.url)
-    findOneUser(events, allGames, uri, (err, userDoc) ->
-      if err?
-        res.send(500)
-      else if not userDoc?
-        res.send(404)
-      else
-        res.json(200, userDoc)
-    )
+    res.format({
+      json: ->
+        res.set("Content-Location", uri+".json")
+        userJson(uri, res)
+      html: ->
+        res.set("Content-Location", uri+".json")
+        userView(events, gameByUri, uri, res)
+    })
     
   app.get "/games/:g", (req, res) ->
     r = identifiers.absolute(req.url)
-    res.json(200, _.find(allGames, (g) -> identifiers.gameUri(g._id) == r))
+    res.json(200, gameByUri[r])
 
   nextUserId = (cb) ->
     # this doesn't care about whether events were cancelled
@@ -105,8 +130,12 @@ openMongo (games, allGames, events) ->
   app.post "/users", (req, res) ->
     nextUserId((err, newId) ->
       e.newEvent("enroll",
-               {pic: req.body.pic, user: identifiers.newUserUri(newId), label: req.body.label},
-               (err, ev) ->
+               {
+                 pic: req.body.pic
+                 user: identifiers.newUserUri(newId)
+                 label: req.body.label
+                 ageCategory: req.body.ageCategory
+                }, (err, ev) ->
                  throw err if err
                  sockets.sendToAll({"event":"enroll"})
                  res.json(200, ev)

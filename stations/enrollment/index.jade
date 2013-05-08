@@ -31,6 +31,9 @@ html
           | Name for badge:
           input#enterName(data-bind="value: enteredName, valueUpdate: 'afterkeydown'")
         div
+          | Age category:
+          select(data-bind="options: ageCategories, optionsCaption: 'Choose...', value: ageCategory")
+        div
           button(data-bind="click: makeUser, enable: makeUserEnabled")
             i.icon-plus
             |  Make new user

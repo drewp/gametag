@@ -11,7 +11,7 @@ class window.Badge
       success: (data) =>
         @elem.html(data)
         loadsLeft--
-        onLoad() if loadsLeft == 0
+        onLoad(this) if loadsLeft == 0
 
     $.ajax
       url: "../../shared/waiting.svg"
@@ -19,15 +19,17 @@ class window.Badge
       success: (data) =>
         @waitingSvgDataUrl = "data:image/svg+xml;base64,"+btoa(data)
         loadsLeft--
-        onLoad() if loadsLeft == 0
+        onLoad(this) if loadsLeft == 0
 
   _setXlinkHref: (id, value) ->
     # this prob needs to change to a class to support multiple badges in a page
     elem = document.getElementById(id)
+    # at least sometimes, this leaves xlink:href alone and sets href,
+    # and href wins. setAttributeNS worked worse.
     elem.setAttribute('xlink:href', value) if elem?
 
   setName: (name) ->
-    @elem.find("#name1, #name2").text(name)
+    @elem.find("#name1, #name2, #tspan3004").text(name)
 
   setPic: (imageData) =>
     # pass null for the waiting dots
@@ -36,6 +38,22 @@ class window.Badge
     else
       if @waitingSvgDataUrl?
         @_setXlinkHref('face', @waitingSvgDataUrl)
+
+  setPicFromSrc: (url) =>
+    # this uses XHR to get the image and make a data url, all so we
+    # would be able to ship this SVG to be printed without any
+    # external links. See http://stackoverflow.com/a/12665440/112864
+    xhr = new XMLHttpRequest()
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer'
+
+    badge = this
+    xhr.onload = (e) ->
+      if this.status == 200
+        base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(this.response)))
+        badge._setXlinkHref('face', "data:image/jpg;base64,"+base64)
+
+    xhr.send()
 
   setUrl: (url) =>
     # pass null for the waiting dots

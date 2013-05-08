@@ -1,0 +1,35 @@
+doctype html
+html
+  head
+    title user
+    link(rel='stylesheet', href='../../shared/style.css')
+  body
+    h1 A Journey Into Outer Space
+
+    div#badge
+
+
+    div
+      | Badge for 
+      = user.label
+
+    h2 Your activity
+
+    p
+      | Played #{user.score.games}
+      if user.score.games == 1
+        |  game
+      else
+        |  games
+    p Got #{user.score.points} points
+    
+    each ev in user.score.events
+      div= ev.desc
+    
+    script
+      window.user = !{userJson}
+    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../shared/badgerender.js')
+    script(src='../../shared/identifiers.js')
+    script(src='../../3rdparty/davidshimjs-qrcodejs-a413bc3/qrcode.min.js')
+    script(src="../../userview.js")

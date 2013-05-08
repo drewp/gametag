@@ -1,12 +1,12 @@
 async = require("../3rdparty/async-0.2.7.js")
 identifiers = require("../shared/identifiers.js")
 
-exports.getAllUsers = (events, allGames, cb) ->
+exports.getAllUsers = (events, gameByUri, cb) ->
     events.find({type:"enroll", cancelled: {$ne: true}}).toArray (err, enrolls) ->
       return cb(err) if err?
       async.map(enrolls,
                 ((enrollEvent, cb2) ->
-                  computeScore(events, allGames, enrollEvent.user, (score) ->
+                  computeScore(events, gameByUri, enrollEvent.user, {}, (score) ->
                     enrollEvent.score = score
                     cb2(null, enrollEvent)
                   )
@@ -19,22 +19,19 @@ exports.getAllUsers = (events, allGames, cb) ->
                   )
       )
 
-exports.findOneUser = (events, allGames, uri, cb) ->
+exports.findOneUser = (events, gameByUri, uri, cb, opts) ->
+   opts = {} if not opts?
    events.findOne({type:"enroll", user: uri, cancelled: {$ne: true}}, (err, doc) ->
       return cb(err) if err?
       return cb(null, doc) if not doc?
-      computeScore(events, allGames, uri, (score) ->
+      computeScore(events, gameByUri, uri, opts, (score) ->
         doc.score = score
         cb(null, doc)
       )
     )
 
 
-computeScore = (events, allGames, user, cb) ->
-  gameByUri = {}
-  for g in allGames
-    gameByUri[identifiers.gameUri(g._id)] = g
-
+computeScore = (events, gameByUri, user, opts, cb) ->
   events.find({
       user: user,
       type: {$in: ["scan", "achievement"]},
@@ -43,6 +40,8 @@ computeScore = (events, allGames, user, cb) ->
     {sort: {t:1}}
     ).toArray((err, evs) ->
       score = {points: 0, games: 0}
+      if opts.allEvents
+        score.events = []
       lastScannedGame = null
       for ev in evs
         switch ev.type
@@ -61,8 +60,12 @@ computeScore = (events, allGames, user, cb) ->
             score.points += g.pointsForPlaying
             score.games += 1
             lastScannedGame = ev.game
+            if opts.allEvents
+              score.events.push(ev)
           when "achievement"
             score.points += ev.won.points if ev.won.points?
+            if opts.allEvents
+              score.events.push(ev)           
 
        cb(score)
     )
