@@ -1,5 +1,6 @@
 model =
   events: ko.observableArray([])
+  rowFilter: ko.observable("")
 
   deleteUser: (user) =>
     $.ajax(
@@ -8,6 +9,11 @@ model =
       success: () ->
         console.log("del")
     )
+
+  rowVisible: (ev) ->
+    return true if @rowFilter() == ""
+    filters = @rowFilter().toLowerCase().split(/\s+/)
+    _.every(filters, (filt) => (@prettyTime(ev) + " " + JSON.stringify(ev).toLowerCase()).indexOf(filt) != -1)
 
   prettyTime: (ev) ->
     window.t = ev.t

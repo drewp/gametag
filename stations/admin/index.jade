@@ -8,6 +8,10 @@ html
     h1 Admin
 
     h2 Events
+
+    div
+      | Filter to lines containing:
+      input(type="text", data-bind="value: rowFilter, valueUpdate: 'afterkeydown'")
     
     table
       thead
@@ -16,7 +20,7 @@ html
           th Event type
           th
       tbody(data-bind="foreach: events")
-        tr(data-bind="css: $parent.eventRowClasses($data)")
+        tr(data-bind="css: $parent.eventRowClasses($data), visible: $parent.rowVisible($data)")
           td.time
             a(data-bind="attr: {href: identifiers.localSite(uri)}, text: $parent.prettyTime($data)")
           td.eventType(data-bind="attr: {title: 'type: '+type}")
