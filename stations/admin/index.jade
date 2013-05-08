@@ -29,7 +29,7 @@ html
             span(data-bind="with: $root.eventQr($data)")
               a(data-bind="attr: {href: identifiers.localSite($data)}") QR
               
-            span(data-bind="text: JSON.stringify($parent.eventSpecific($data))")
+            span(data-bind="html: $parent.eventSpecificHtml($data)")
           td
             // draw this differently if we're already cancelled
             button(data-bind="click: $parent.toggleCancelEvent")
