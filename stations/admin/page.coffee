@@ -1,5 +1,6 @@
 model =
   events: ko.observableArray([])
+  rowFilter: ko.observable("")
 
   deleteUser: (user) =>
     $.ajax(
@@ -9,12 +10,23 @@ model =
         console.log("del")
     )
 
+  rowVisible: (ev) ->
+    return true if @rowFilter() == ""
+    filters = @rowFilter().toLowerCase().split(/\s+/)
+    _.every(filters, (filt) => (@prettyTime(ev) + " " + JSON.stringify(ev).toLowerCase()).indexOf(filt) != -1)
+
   prettyTime: (ev) ->
     window.t = ev.t
     new Date(ev.t).toLocaleTimeString()
 
-  eventSpecific: (ev) ->
-    _.omit(ev, ['_id', 'type', 't', 'uri', 'cancelled', 'isNewDay'])
+  eventSpecificHtml: (ev) ->
+    data = _.omit(ev, ['_id', 'type', 't', 'uri', 'cancelled', 'isNewDay'])
+    json = JSON.stringify(data)
+    html = json.replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+    html.replace(/// https://gametag.bigast.com(/[a-z0-9/]*) ///g, (match, path) ->
+      '<a href="'+match+'">'+path+'</a>'
+    )
 
   eventQr: (ev) ->
     if ev.user

@@ -43,22 +43,26 @@ computeScore = (events, allGames, user, cb) ->
     {sort: {t:1}}
     ).toArray((err, evs) ->
       score = {points: 0, games: 0}
-      async.each(evs, ((ev, cb) ->
-          switch ev.type
-            when "scan"
-              g = gameByUri[ev.game]
-              if not g?
-                console.log("unknown game in scoring: "+ev.game)
-                return cb(null)
-              score.points += g.pointsForPlaying
-              score.games += 1
-            when "achievement"
-              score.points += ev.won.points if ev.won.points?
-          cb(null)
-        ),
-        ((err) ->
-          throw err if err?
-          cb(score)
-        )) 
-          
+      lastScannedGame = null
+      for ev in evs
+        switch ev.type
+          when "scan"
+            if ev.game == lastScannedGame
+              # no points for repeat scan. Currently this even takes
+              # effect if other users played in between or if the
+              # gameop cleared your scan. Your new scan will wake up
+              # the game screen but not give you points.
+              continue
+              
+            g = gameByUri[ev.game]
+            if not g?
+              console.log("unknown game in scoring: "+ev.game)
+              return cb(null)
+            score.points += g.pointsForPlaying
+            score.games += 1
+            lastScannedGame = ev.game
+          when "achievement"
+            score.points += ev.won.points if ev.won.points?
+
+       cb(score)
     )

@@ -1,6 +1,9 @@
 @help:
 	echo try the 'run_server_with_watch' target
 
+tests_on_running_server:
+	node_modules/mocha/bin/mocha --compilers coffee:coffee-script test/testAdmin.coffee
+
 install_js_dependencies:
 	npm install
 
