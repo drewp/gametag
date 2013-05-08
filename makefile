@@ -27,6 +27,12 @@ import_game_data_to_mongo:
 install_python_deps_for_scanner:
 	sudo apt-get install python-requests python-opencv python-numpy python-pyglet python-zbar
 
+fix_intel_gfx:
+	sudo apt-get purge nvidia*
+	sudo apt-get install --reinstall xserver-xorg-video-intel libgl1-mesa-glx libgl1-mesa-dri xserver-xorg-core
+	sudo dpkg-reconfigure xserver-xorg
+	sudo update-alternatives --remove gl_conf /usr/lib/nvidia-current/ld.so.conf
+
 # system packages:
 # mongodb-clients
 # ppa:chris-lea/node.js package nodejs
