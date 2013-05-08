@@ -25,7 +25,7 @@ html
           td
             span(data-bind="with: $data.pic")
               a(data-bind="attr: {href: identifiers.localSite($data)}")
-                img#thumb(data-bind="attr: {'data-original': $data}")
+                img#thumb(data-bind="attr: {'data-original': identifiers.localSite($data)}")
             span(data-bind="with: $root.eventQr($data)")
               a(data-bind="attr: {href: identifiers.localSite($data)}") QR
               
