@@ -22,7 +22,7 @@ html
       tbody(data-bind="foreach: events")
         tr(data-bind="css: $parent.eventRowClasses($data), visible: $parent.rowVisible($data)")
           td.time
-            a(data-bind="attr: {href: identifiers.localSite(uri)}, text: $parent.prettyTime($data)")
+            a(data-bind="attr: {href: identifiers.localSite($data.uri)}, text: $parent.prettyTime($data)")
           td.eventType(data-bind="attr: {title: 'type: '+type}")
             i(data-bind="attr: {'class': $parent.iconClass($data)}")
             span(data-bind="text: type.replace('achievement','achv')")

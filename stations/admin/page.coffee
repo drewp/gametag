@@ -24,7 +24,7 @@ model =
     json = JSON.stringify(data)
     html = json.replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-    html.replace(/// https://gametag.bigast.com(/[a-z0-9/]*) ///g, (match, path) ->
+    html.replace(/// https://gametag.bigast.com(/[a-zA-Z0-9_\./]*) ///g, (match, path) ->
       '<a href="'+match+'">'+path+'</a>'
     )
 
@@ -71,13 +71,12 @@ readEvents = ->
 
 ko.computed ->
   model.events()
-  $("img").lazyload()
+  $("img").lazyload({threshold: 200})
   
 new ReconnectingWebSocket(
   socketRoot + "/events",
   (() -> model.events.removeAll(); readEvents()),
   ((msg) ->
-    console.log("new ev", msg)
     # prepend a new event to the model.
     # Note that after reconnect, readEvents may be slow to add its
     # events, and it may include some dups that we also added
