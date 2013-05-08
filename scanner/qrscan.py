@@ -77,7 +77,7 @@ class ScannerLoop(app.EventLoop):
 
                     self.sounds.play('scanned-person.wav')
                     print "found", symbol.data, symbol.location
-                    print post(self.args.post, verify=False,
+                    print post(self.args.post,
                          timeout=2,
                          data={'game': self.station, 'qr': symbol.data})
             self.lastSeen[symbol.data] = now
