@@ -87,3 +87,12 @@ class window.Badge
         return
       cb(imageData)
     setTimeout(fin, 50)
+
+  postSvg: (url, cb) =>
+    $.ajax(
+      type: "POST"
+      url: url
+      contentType: "image/svg+xml"
+      data: @getSvgData()
+      success: cb
+    )

@@ -94,6 +94,7 @@ class Model
   reset: =>
     @enteredName("")
     @currentUserUri(null)
+    @ageCategory(null)
     badge.setName("")
     badge.setPic(null)
     @currentPicUri(null)
@@ -102,14 +103,7 @@ class Model
   print: ->
     $("#print").text("Printing...")
 
-    $.ajax(
-      type: "POST"
-      url: "../../print"
-      contentType: "image/svg+xml"
-      data: badge.getSvgData()
-      success: (report) ->
-        @reset
-    )
+    badge.postSvg("../../print", ((report) => @reset()))
 
   makeUser: =>
     $.post(

@@ -3,10 +3,10 @@ fs = require('fs')
 exec = require('child_process').exec
 
 lpr = (filename, destinationPrinter, jobName, cb) ->
-  cmdline = "lpr " +
+  cmdline = "lp " +
        filename +
-       " -P " + destinationPrinter +
-       " -T " + jobName
+       " -d " + destinationPrinter +
+       " -t " + jobName
   console.log("run: "+cmdline)
   exec(cmdline,
        (err, stdout, stderr) ->
@@ -18,7 +18,6 @@ lpr = (filename, destinationPrinter, jobName, cb) ->
   )
 
 exports.printSvgBody = (inputStream, destinationPrinter, cb) ->
-  this is broken
   domain = domainCreate()
   domain.on('error', (err) ->
     console.log("domain error: " + err)
@@ -36,13 +35,14 @@ exports.printSvgBody = (inputStream, destinationPrinter, cb) ->
            "--export-pdf="+base+".pdf "+
            "--export-dpi=300 "+base+".svg")
     onExec = ((err, stdout, stderr) ->
+      console.log("inkscape done: ", err)
       if err?
         [err.stdout, err.stderr] = [stdout, stderr]
-        throw err
+        return cb(err)
 
-        # also see https://npmjs.org/package/lp-client
-        jobName = "gametag" + (+new Date())
-        lpr(base + ".pdf", destinationPrinter, jobName, cb)
+      # also see https://npmjs.org/package/lp-client
+      jobName = "gametag" + (+new Date())
+      lpr(base + ".pdf", destinationPrinter, jobName, cb)
     )
     inputStream.on('end', () ->
       console.log("run inkscape to make pdf")

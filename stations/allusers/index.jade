@@ -1,0 +1,35 @@
+doctype
+html
+  head
+    link(rel='stylesheet', href='../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    link(rel='stylesheet', type='text/css', href='style.css')
+
+  body
+    h1 All users
+
+    div(data-bind="foreach: users")
+      div
+        span.created(data-bind="text: t")
+        | 
+        a(data-bind="text: label, attr: {href: user}, click: $root.fillBadge")
+    
+    div#badge
+
+    button(data-bind="click: print") Print this badge
+    p
+      | Printing sends to a print class named 'photopaper'. See the 
+      a(href="http://localhost:631/jobs") cups job list
+      |  (host may be wrong)
+
+    
+    #status
+
+    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../3rdparty/knockout-2.2.1.js')
+    script(src='../../3rdparty/davidshimjs-qrcodejs-a413bc3/qrcode.min.js')
+    script(src='../../shared/websocket.js')
+    script(src='../../shared/identifiers.js')
+    script(src='../../shared/netconfig.js')
+    script(src='../../shared/badgerender.js')
+    script(src='page.js')

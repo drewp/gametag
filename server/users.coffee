@@ -2,7 +2,7 @@ async = require("../3rdparty/async-0.2.7.js")
 identifiers = require("../shared/identifiers.js")
 
 exports.getAllUsers = (events, gameByUri, cb) ->
-    events.find({type:"enroll", cancelled: {$ne: true}}).toArray (err, enrolls) ->
+    events.find({type:"enroll", cancelled: {$ne: true}}).sort({t:1}).toArray (err, enrolls) ->
       return cb(err) if err?
       async.map(enrolls,
                 ((enrollEvent, cb2) ->
