@@ -95,4 +95,5 @@ class window.Badge
       contentType: "image/svg+xml"
       data: @getSvgData()
       success: cb
+      error: cb
     )

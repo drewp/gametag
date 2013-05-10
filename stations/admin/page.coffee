@@ -43,6 +43,7 @@ model =
         pic: 'icon-camera'
         achievement: 'icon-money'
         printError: 'icon-stethoscope'
+        print: 'icon-print'
     }[ev.type]
 
   eventRowClasses: (ev) ->

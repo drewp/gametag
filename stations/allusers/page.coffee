@@ -2,15 +2,16 @@
 class Model
   constructor: ->
     @users = ko.observableArray([])
+    @printResult = ko.observable("")
    
   fillBadge: (user) =>
     badge.setName(user.label)
-    badge.setPicFromSrc(user.pic)
+    badge.setPicFromSrc(identifiers.localSite(user.pic))
     badge.setUrl(user.user)
 
-  print: ->
-    $("#print").text("Printing...")
-    badge.postSvg("../../print", (report) -> 0)
+  print: =>
+    @printResult("Printing...")
+    badge.postSvg("../../print", (report) => @printResult(JSON.stringify(report)))
 
   
 model = new Model()
