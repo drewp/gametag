@@ -177,7 +177,7 @@ openMongo (games, gameByUri, events) ->
     respondFile(res, "./pic/", req.params.f)
 
   app.post "/print", (req, res) ->
-    printSvgBody(req, "printername1", (err, jobName) ->
+    printSvgBody(req, "photopaper", (err, jobName) ->
       if err?
         e.newEvent("printError", {error: err}, (err, ev) -> res.json(500, ev))
       else
