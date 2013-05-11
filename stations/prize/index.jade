@@ -12,19 +12,45 @@ html
 
     h2 Logged in
 
-    include ../../shared/scanwidget
+    div(style="display: inline-block")
+      include ../../shared/scanwidget
 
-    div(data-bind="with: recentUserData")
+    div(style="display: inline-block", data-bind="with: recentUserData")
       h2 Games played
         div
-          | Played
-          span(data-bind="score.games")
+          | Played 
+          span(data-bind="text: score.games")
+          | 
+          span(data-bind="text: score.games == 1 ? 'game' : 'games'")
+          |  total
+
+        div(data-bind="foreach: $root.gameReport")
+          div
+            span(data-bind="text: label")
+            | 
+            span(data-bind="text: played")
+
       h2 Points won
+        div
+          | Played 
+          span(data-bind="text: score.points")
   
       h2 Points spent
+        div
+          | Played 
+          span(data-bind="text: score.spentPoints")
   
       h2 Rank prizes
-    
+        table(data-bind="foreach: score.rank")
+          tr
+            td Rank 
+              span(data-bind="text: label")
+            td have prize 
+              span(data-bind="text: havePrize")
+            td iscurrent 
+              span(data-bind="text: isCurrent")
+
+        
 
     p#status
 

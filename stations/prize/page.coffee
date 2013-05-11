@@ -2,9 +2,19 @@ thisGame = "https://gametag.bigast.com/stations/prize"
 
 class Model
   constructor: ->
+    @allGames = ko.observable(null)
     @recentUserData = ko.observable(null)
     @userDataChanged = ko.observable(null) # just an event trigger
     @currentUserScore = ko.observable(null) # only assigned when we have a user
+    @gameReport = ko.observable(null)
+    
+    ko.computed =>
+      if not @allGames()? or not @recentUserData()?
+        return @gameReport(null)
+        
+      @gameReport(_.extend({
+          played: @recentUserData().score.perGame[g.uri]
+        },  g) for g in @allGames())
 
     if false#ko.computed =>
       @userDataChanged()
@@ -15,7 +25,7 @@ class Model
             
           ), 0)
 
-    noticeChangedUser = ko.computed =>
+    if false#noticeChangedUser = ko.computed =>
       return unless @recentUserData?
       score = new UserScore(@recentUserData())
       @currentUserScore(score)
@@ -62,14 +72,16 @@ reloadEvents = () ->
   )
 
 
-new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
-  if ev.type == 'cancel'
-    reloadEvents()
-    model.userDataChanged(new Date()) 
-    return
+$.getJSON "../../games", (data) ->
+  model.allGames(_.sortBy(data.games, ((k,v) -> k)))
+  new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
+    if ev.type == 'cancel'
+      reloadEvents()
+      model.userDataChanged(new Date()) 
+      return
 
-  model.newScoreEvents.onNewEvent(ev)
-  if ev.user?
-    model.userDataChanged(new Date())
-)
-ko.applyBindings(model)
+    model.newScoreEvents.onNewEvent(ev)
+    if ev.user?
+      model.userDataChanged(new Date())
+  )
+  ko.applyBindings(model)

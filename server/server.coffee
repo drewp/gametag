@@ -46,7 +46,9 @@ openMongo = (cb) ->
       games.find({}).toArray (err, allGames) ->
         gameByUri = {}
         for g in allGames
-          gameByUri[identifiers.gameUri(g._id)] = g
+          uri = identifiers.gameUri(g._id)
+          g.uri = uri
+          gameByUri[uri] = g
 
         client.collection 'events', (err, events) ->
           throw err if err
@@ -125,6 +127,9 @@ openMongo (games, gameByUri, events) ->
         res.set("Content-Location", uri+".json")
         userView(events, gameByUri, uri, res)
     })
+
+  app.get "/games", (req, res) ->
+    res.json(200, {games: gameByUri})
     
   app.get "/games/:g", (req, res) ->
     r = identifiers.absolute(req.url)
