@@ -1,0 +1,19 @@
+.scanArea
+  .scan
+    .mode.idleMode(data-bind="visible: !recentUserData()")
+      div Waiting for badge scan
+      div
+        img(src="../../../shared/noise.gif")
+    .mode.decodedMode(data-bind="visible: recentUserData()")
+      div Identified
+      div(data-bind="with: recentUserData")
+        div
+          img(data-bind="attr: {src: pic}")
+        div(data-bind="text: label")
+        span.rank Ensign
+          span.have ⍟
+          span.need ⍟⍟⍟⍟⍟⍟
+        div
+          | Current points: 
+          span(data-bind="text: score.points")
+  

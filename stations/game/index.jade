@@ -5,6 +5,7 @@ html
     title game station
     link(rel='stylesheet', type='text/css', href='../../../shared/style.css')
     link(rel='stylesheet', type='text/css', href='../../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    link(rel='stylesheet', type='text/css', href='../../../shared/scanwidget.css')
     link(rel='stylesheet', href='style.css')
   body
     img.bg(data-bind="attr: {src: bgImage()}")
@@ -17,35 +18,18 @@ html
 
     p#status
 
-    div.fg        
-        .scanArea
-          .scan
-            .mode.idleMode(data-bind="visible: !newScoreEvents.eventList().length")
-              div Waiting for badge scan
-              div
-                img(src="../../../shared/noise.gif")
-            .mode.decodedMode(data-bind="visible: newScoreEvents.eventList().length > 0")
-              div Identified
-              div(data-bind="with: recentUserData")
-                div
-                  img(data-bind="attr: {src: pic}")
-                div(data-bind="text: label")
-                span.rank Ensign
-                  span.have ⍟
-                  span.need ⍟⍟⍟⍟⍟⍟
-                div
-                  | Current points: 
-                  span(data-bind="text: score.points")
+    div.fg
+      include ../../shared/scanwidget 
 
-        .scorecardEnvelope
-          table.scorecard(data-bind="foreach: newScoreEvents.eventList()")
-            tr
-              td
-                i.icon-trophy
-              td
-                span(data-bind="text: scoreDesc")
-              td
-                span(data-bind="text: scoreWon")
+      .scorecardEnvelope
+        table.scorecard(data-bind="foreach: newScoreEvents.eventList()")
+          tr
+            td
+              i.icon-trophy
+            td
+              span(data-bind="text: scoreDesc")
+            td
+              span(data-bind="text: scoreWon")
             
       
     script(src='../../../3rdparty/jquery-1.9.1.min.js')

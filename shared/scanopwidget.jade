@@ -1,0 +1,18 @@
+fieldset
+  legend Last scanned
+  div
+    | User: 
+    span(data-bind="text: lastUser() || '(waiting for scan)'")
+  div(data-bind="if: lastUser()")
+    | Scan time: 
+    span(data-bind="text: scanAgo")
+  div(data-bind="with: lastUserData")
+    img(class="user", data-bind="attr: {src: pic}")
+    div
+      | Name: 
+      span(data-bind="text: label")
+    div
+      | Score:
+      span(data-bind="text: JSON.stringify(score)")
+  div
+    button(type="submit", data-bind="click: $root.bye") Clear this guest
