@@ -39,7 +39,7 @@ computeScore = (events, gameByUri, user, opts, cb) ->
     },
     {sort: {t:1}}
     ).toArray((err, evs) ->
-      score = {points: 0, games: 0}
+      score = {points: 0, games: 0, spentPoints: 0, perGame: {}, rank: 0}
       if opts.allEvents
         score.events = []
       lastScannedGame = null
@@ -52,14 +52,16 @@ computeScore = (events, gameByUri, user, opts, cb) ->
               # gameop cleared your scan. Your new scan will wake up
               # the game screen but not give you points.
               continue
-              
+
+            if ev.game == 'https://gametag.bigast.com/stations/prize'
+              continue
             g = gameByUri[ev.game]
             if not g?
               console.log("unknown game in scoring: "+ev.game)
-              return cb(null)
-            score.points += g.pointsForPlaying
-            score.games += 1
-            lastScannedGame = ev.game
+            else
+              score.points += g.pointsForPlaying
+              score.games += 1
+              lastScannedGame = ev.game
             if opts.allEvents
               score.events.push(ev)
           when "achievement"

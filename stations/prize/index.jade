@@ -1,0 +1,38 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title prize station
+    link(rel='stylesheet', type='text/css', href='../../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    link(rel='stylesheet', type='text/css', href='../../../shared/scanwidget.css')
+    link(rel='stylesheet', href='style.css')
+  body
+    h1 Prize
+
+    h2 Logged in
+
+    include ../../shared/scanwidget
+
+    div(data-bind="with: recentUserData")
+      h2 Games played
+        div
+          | Played
+          span(data-bind="score.games")
+      h2 Points won
+  
+      h2 Points spent
+  
+      h2 Rank prizes
+    
+
+    p#status
+
+    script(src='../../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../../3rdparty/knockout-2.2.1.js')
+    script(src='../../../3rdparty/underscore-1.4.4-min.js')
+    script(src='../../../shared/websocket.js')
+    script(src='../../../shared/points.js')
+    script(src='../../../shared/netconfig.js')
+    script(src='../../../shared/identifiers.js')
+    script(src="page.js")

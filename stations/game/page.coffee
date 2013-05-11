@@ -76,8 +76,12 @@ class Model
 
     ko.computed =>
       @userDataChanged()
-      $.getJSON @newScoreEvents.currentUser(), (data) =>
-        @recentUserData(data)
+      cur = @newScoreEvents.currentUser()
+      if cur?
+        $.getJSON cur, (data) =>
+          @recentUserData(data)
+      else
+        @recentUserData(null)
 
     ko.computed =>
       if @newScoreEvents.currentUser()

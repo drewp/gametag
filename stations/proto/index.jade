@@ -8,7 +8,10 @@ html
     p Set this screen to be:
     li: a(href='/stations/enrollment/') enrollment station
     li: a(href='/stations/scoreboard/') scoreboard station
-    li: a(href='/stations/prize/') prize station
+    li
+      a(href='/stations/prize/') prize station
+      | /
+      a(href='/stations/prizeop/') prize station operator
     li: a(href='/stations/admin/') admin station
     li: a(href='/stations/allusers/') list all users
     each g in locals.games

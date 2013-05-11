@@ -1,0 +1,75 @@
+thisGame = "https://gametag.bigast.com/stations/prize"
+
+class Model
+  constructor: ->
+    @recentUserData = ko.observable(null)
+    @userDataChanged = ko.observable(null) # just an event trigger
+    @currentUserScore = ko.observable(null) # only assigned when we have a user
+
+    if false#ko.computed =>
+      @userDataChanged()
+      if @recentUserData()?
+        setTimeout((() => 
+          $.getJSON @recentUserData().user, (data) =>
+            @recentUserData(data)
+            
+          ), 0)
+
+    noticeChangedUser = ko.computed =>
+      return unless @recentUserData?
+      score = new UserScore(@recentUserData())
+      @currentUserScore(score)
+      setTimeout((() ->
+        # currently we have to see these all again to rebuild the user score
+        #$.getJSON(".././../../events/all", (data) ->
+        #  data.events.forEach((ev) => score.onEvent(ev))
+        #)
+        ), 0)
+
+
+class UserScore
+  # computes the full score and can incrementally update it with new events
+  constructor: (userDoc) ->
+    # pass me the enrollment doc for the user
+    @user = userDoc.user
+    @numEvents = 0
+
+    #track points won, spent, ranks
+    
+  onEvent: (ev) =>
+    # pass me all the type:scan and type:achievement events
+    return if ev.user != @user
+    return if ev.cancelled
+
+    @numEvents = @numEvents + 1
+  get: () =>
+    {demo: @numEvents} 
+    
+onScan = (scanEvent) ->
+  $.getJSON identifiers.localSite(scanEvent.user), (data) =>
+    model.recentUserData(data)
+
+model = new Model()
+
+
+
+reloadEvents = () ->
+  # this is to notice prize table scans 
+  $.getJSON("../../events/all", (data) ->
+    latestScan = _.find(data.events, (ev) -> (ev.type == "scan" && ev.game == thisGame))
+    if latestScan?
+      onScan(latestScan)
+  )
+
+
+new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
+  if ev.type == 'cancel'
+    reloadEvents()
+    model.userDataChanged(new Date()) 
+    return
+
+  model.newScoreEvents.onNewEvent(ev)
+  if ev.user?
+    model.userDataChanged(new Date())
+)
+ko.applyBindings(model)
