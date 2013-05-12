@@ -24,33 +24,35 @@ html
           span(data-bind="text: score.games == 1 ? 'game' : 'games'")
           |  total
 
-        div(data-bind="foreach: $root.gameReport")
-          div
-            span(data-bind="text: label")
-            | 
-            span(data-bind="text: played")
-
-      h2 Points won
-        div
-          | Played 
-          span(data-bind="text: score.points")
-  
-      h2 Points spent
-        div
-          | Played 
-          span(data-bind="text: score.spentPoints")
+        table(data-bind="foreach: $root.gameReport")
+          tr
+            td(data-bind="text: label")
+            td(data-bind="text: played ? played : 'not played'")
+      div
+        div(style="display: inline-block") 
+          h2 Points won
+            div.pointsBar
+              div.label
+                span(data-bind="text: score.points")
+              div.bar(data-bind="style: {height: (score.points / $root.maxPoints * 100)+'%'}")
+        div(style="display: inline-block")
+          h2 Points spent
+            div.pointsBar
+              div.label
+                span(data-bind="text: score.spentPoints")
+              div.bar(data-bind="style: {height: (score.spentPoints / $root.maxPoints * 100)+'%'}")
   
       h2 Rank prizes
         table(data-bind="foreach: score.rank")
           tr
-            td Rank 
+            td 
               span(data-bind="text: label")
-            td have prize 
-              span(data-bind="text: havePrize")
-            td iscurrent 
-              span(data-bind="text: isCurrent")
-
-        
+            td 
+              span(data-bind="if: havePrize")
+                | have prize
+            td 
+              span(data-bind="if: isCurrent")
+                | Current ranking
 
     p#status
 
