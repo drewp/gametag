@@ -18,7 +18,7 @@ class Model
       console.log("tospend", pointsToSpend)
 
       ret = []
-      for size in [500, 1000, 2000]
+      for size in [2500, 7000, 15000]
         ret.push({
           label: "Give "+size+" point prize"
           points: -size
@@ -28,7 +28,7 @@ class Model
 
 
       availRankPrizes = []
-      for r in score.rank
+      for r in score.rank.levels
         if r.rank == "cadet"
           continue
         row = {

@@ -10,9 +10,10 @@
         div
           img(data-bind="attr: {src: pic}")
         div(data-bind="text: label")
-        span.rank Ensign
-          span.have ⍟
-          span.need ⍟⍟⍟⍟⍟⍟
+        span.rank
+          span(data-bind="text: score.rank.current.label")
+          span.have(data-bind="text: new Array(score.rank.current.stars+1).join('⍟')")
+          span.need(data-bind="text: new Array(5-score.rank.current.stars+1).join('⍟')")
         div
           | Current points: 
           span(data-bind="text: score.points")

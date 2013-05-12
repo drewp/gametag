@@ -44,7 +44,7 @@ html
     div.rankPrizes
         h2 Rank prizes
           table
-            tbody(data-bind="foreach: score.rank")
+            tbody(data-bind="foreach: score.rank.levels")
               tr(data-bind="css: {alreadyAchieved: alreadyAchieved, isCurrent: isCurrent, havePrize: havePrize, notAchieved: notAchieved}")
                 td.label
                   span(data-bind="text: label")

@@ -89,16 +89,24 @@ computeScore = (events, gameByUri, user, ageCategory, opts, cb) ->
        cb(null, score)
     )
 
+rankLabel = (r) -> r[0].toUpperCase() + r.substr(1)
+
 rankResult = (boughtRankPrizes, currentRank) ->
   ranks = ["cadet", "captain", "colonel", "commander", "commodore"]
   {
-    rank: r
-    label: r[0].toUpperCase() + r.substr(1)
-    havePrize: r in boughtRankPrizes
-    isCurrent: r == currentRank
-    alreadyAchieved: ranks.indexOf(r) < ranks.indexOf(currentRank)
-    notAchieved: ranks.indexOf(r) > ranks.indexOf(currentRank)
-  } for r in ranks
+    levels: {
+          rank: r
+          label: rankLabel(r)
+          havePrize: r in boughtRankPrizes
+          isCurrent: r == currentRank
+          alreadyAchieved: ranks.indexOf(r) < ranks.indexOf(currentRank)
+          notAchieved: ranks.indexOf(r) > ranks.indexOf(currentRank)
+        } for r in ranks
+    current: {
+      label: rankLabel(currentRank)
+      stars: ranks.indexOf(currentRank) + 1
+    }
+  }
     
 computeRank = (points, perGame, ageCategory) ->
   distinctGames = gameCount(perGame, 1)
