@@ -21,9 +21,9 @@ html
           | win 
           span.summary(data-bind="text: $root.summarizeWin($data)")
   
-          div(data-bind="if: $root.lastUserData")
+          div(data-bind="if: $root.currentUserData")
             button(data-bind="click: $root.award")
-              span(data-bind="text: $root.lastUserData().label")
+              span(data-bind="text: $root.currentUserData().label")
               |  wins
               | '
               span(data-bind="text: label")

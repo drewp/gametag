@@ -41,9 +41,10 @@ model =
         scan: 'icon-qrcode'
         cancel: 'icon-ban-circle'
         pic: 'icon-camera'
-        achievement: 'icon-money'
+        achievement: 'icon-trophy'
         printError: 'icon-stethoscope'
         print: 'icon-print'
+        buy: 'icon-money'
     }[ev.type]
 
   eventRowClasses: (ev) ->

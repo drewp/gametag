@@ -6,19 +6,16 @@ html
     link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
     link(rel='stylesheet', href='style.css')
   body
-    h1
-      div Prize operator console
+    h1 Prize operator console
 
     include ../../shared/scanopwidget
-              
-    div: button Give 500 prize
-    div: button Give 1000 prize
-    div: button Give 2000 prize
 
-    div: button --Give rank1 prize--
-    div: button Give rank2 prize
-    div: button Give rank3 prize
-    div: button Give rank4 prize
+    div(data-bind="foreach: availablePrizes")
+      div
+        button(data-bind="text: label, enable: enable, click: $root.buy")
+        // ko if: !enable
+        span(data-bind="text: $data.whyNot")
+        // /ko
 
     p#status
 

@@ -36,10 +36,10 @@ html
           div.bar(data-bind="style: {height: (score.points / $root.maxPoints * 100)+'%'}")
       div(style="display: inline-block")
           h2 Points spent
-          div.pointsBar
+          div.pointsBar.spent
             div.label
               span(data-bind="text: score.spentPoints")
-            div.bar(data-bind="style: {height: (score.spentPoints / $root.maxPoints * 100)+'%'}")
+            div.bar(data-bind="style: {height: (-score.spentPoints / $root.maxPoints * 100)+'%'}")
 
     div.rankPrizes
         h2 Rank prizes

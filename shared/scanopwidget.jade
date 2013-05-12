@@ -1,12 +1,12 @@
 fieldset
-  legend Last scanned
+  legend Last scanned at this station
   div
     | User: 
-    span(data-bind="text: lastUser() || '(waiting for scan)'")
-  div(data-bind="if: lastUser()")
+    span(data-bind="text: currentScan() ? currentScan().user : '(waiting for scan)'")
+  div(data-bind="if: currentScan()")
     | Scan time: 
     span(data-bind="text: scanAgo")
-  div(data-bind="with: lastUserData")
+  div(data-bind="with: currentUserData")
     img(class="user", data-bind="attr: {src: pic}")
     div
       | Name: 
