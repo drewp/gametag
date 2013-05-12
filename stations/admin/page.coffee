@@ -69,6 +69,7 @@ model =
 readEvents = ->
   # append all events to the model
   $.getJSON "../../events/all", {}, (data) ->
+    model.events.removeAll()
     data.events.forEach((ev) -> model.events.push(ev))
 
 ko.computed ->
@@ -77,13 +78,16 @@ ko.computed ->
   
 new ReconnectingWebSocket(
   socketRoot + "/events",
-  (() -> model.events.removeAll(); readEvents()),
-  ((msg) ->
+  (() -> readEvents()),
+  ((ev) ->
     # prepend a new event to the model.
     # Note that after reconnect, readEvents may be slow to add its
     # events, and it may include some dups that we also added
-    # here. 
-    model.events.unshift(msg)
+    # here.
+    if ev.type == 'cancel'
+      readEvents()
+    else
+      model.events.unshift(ev)
   )
 )
         
