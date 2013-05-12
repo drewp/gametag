@@ -130,6 +130,12 @@ openMongo (games, gameByUri, events) ->
 
   app.get "/games", (req, res) ->
     res.json(200, {games: gameByUri})
+
+  app.get "/games/qr", (req, res) ->
+    res.render("stations/proto/gamesqr.jade",
+               {games: _.extend(
+                {"prize":{uri: "https://gametag.bigast.com/stations/prize"}},
+                gameByUri)})
     
   app.get "/games/:g", (req, res) ->
     r = identifiers.absolute(req.url)

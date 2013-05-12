@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title all games
+  body
+    h1 all games
+    each g in locals.games
+      div(style="border: 1px solid black; display: inline-block; margin: 10px")
+        div= g.uri
+        div
+          img(src="https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl="+encodeURI(g.uri))
