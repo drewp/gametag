@@ -14,7 +14,7 @@ class Model
       score = @currentUserData()?.score
       if not score?
         return []
-      pointsToSpend = score.points - score.spentPoints
+      pointsToSpend = score.points - score.absSpentPoints
       console.log("tospend", pointsToSpend)
 
       ret = []

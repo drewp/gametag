@@ -38,11 +38,11 @@ html
           h2 Points spent
           div.pointsBar.spent
             div.label
-              span(data-bind="text: score.spentPoints")
-            div.bar(data-bind="style: {height: (-score.spentPoints / $root.maxPoints * 100)+'%'}")
+              span(data-bind="text: score.absSpentPoints")
+            div.bar(data-bind="style: {height: (score.absSpentPoints / $root.maxPoints * 100)+'%'}")
 
     div.rankPrizes
-        h2 Rank prizes
+        h2 Rank
           table
             tbody(data-bind="foreach: score.rank.levels")
               tr(data-bind="css: {alreadyAchieved: alreadyAchieved, isCurrent: isCurrent, havePrize: havePrize, notAchieved: notAchieved}")
@@ -52,7 +52,7 @@ html
                   div(data-bind="if: isCurrent || alreadyAchieved")
                     span(data-bind="if: havePrize")
                       | Have prize
-                    span(data-bind="if: !havePrize")
+                    span(data-bind="if: !havePrize && rank != 'cadet'")
                       | Prize available
 
     // /ko

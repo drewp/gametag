@@ -68,7 +68,7 @@ class NewScoreEvents
 
 class Model
   constructor: ->
-    @simUsers = (identifiers.absolute('/users/'+x) for x in [1,2,3,12,13])
+    @simUsers = (identifiers.absolute('/users/'+x) for x in [1,2,3,8,12,13])
 
     @newScoreEvents = new NewScoreEvents()
     @recentUserData = ko.observable(null)

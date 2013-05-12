@@ -43,7 +43,7 @@ computeScore = (events, gameByUri, user, ageCategory, opts, cb) ->
     },
     {sort: {t:1}}
     ).toArray((err, evs) ->
-      score = {points: 0, games: 0, spentPoints: 0, perGame: {}, rank: []}
+      score = {points: 0, games: 0, absSpentPoints: 0, perGame: {}, rank: []}
       if opts.allEvents
         score.events = []
       lastScannedGame = null
@@ -78,7 +78,7 @@ computeScore = (events, gameByUri, user, ageCategory, opts, cb) ->
             if ev.rankPrize?
               boughtRankPrizes.push(ev.rankPrize)
             else
-              score.spentPoints += -ev.points
+              score.absSpentPoints += -ev.points
        try
          currentRank = computeRank(score.points, score.perGame, ageCategory)
        catch e
