@@ -1,20 +1,68 @@
+html
+  background: hsl(0, 0%, 9%)
+
+body
+  width: 2560px
+  height: 1600px
+  font-size: 20px
+
+.gamesPlayed table
+  font-size: 30px
+  background: hsl(0, 0%, 17%)
+
+  tr:nth-child(even)
+    background: hsl(0, 0%, 27%)
+
+  td
+    padding: 7px 20px
+  tr.unplayed
+    color: yellow
+    font-weight: bold
+    
 .pointsBar
-  width: 80px
-  height: 200px
+  width: 300px
+  height: 1000px
+  margin: 0 45px
   position: relative
   border: 1px solid white
   background: gray
 
   .label
-    font-size: 20px
-  
-  .bar
-    background: rgb(182, 113, 75)
-    position: absolute
-    bottom: 0
-    width: 60px
-    margin-left: 9px
-
-    border: 1px solid white
-    border-bottom: 0
+    font-size: 40px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    bottom: 10px;
+    z-index: 1;
+    color: hsl(0, 0%, 0%);
     
+  .bar
+    background: hsl(41, 67%, 54%);
+    position: absolute;
+    bottom: 0;
+    right: 30px;
+    border: 1px solid hsl(0, 100%, 100%);
+    border-bottom: 0;
+    left: 30px;
+  
+.rankPrizes
+  tr.alreadyAchieved td.label
+    text-decoration: line-through
+    color: gray
+  tr.isCurrent td.label span
+    display: inline-block;
+    border: 1px solid hsl(60, 100%, 50%);
+    border-radius: 10px;
+    padding: 7px;
+    background: hsl(60, 41%, 29%);
+    
+  tr.notAchieved td.label
+    color: hsl(0, 0%, 22%)
+
+.scanArea, .gamesPlayed, .pointGraphs, .rankPrizes
+  border: 1px solid yellow
+  display: inline-block
+  vertical-align: top
+  margin: 20px
+  padding: 10px

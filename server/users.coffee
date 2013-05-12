@@ -1,12 +1,14 @@
 async = require("../3rdparty/async-0.2.7.js")
 identifiers = require("../shared/identifiers.js")
+_ = require("../3rdparty/underscore-1.4.4-min.js")
+
 
 exports.getAllUsers = (events, gameByUri, cb) ->
     events.find({type:"enroll", cancelled: {$ne: true}}).sort({t:1}).toArray (err, enrolls) ->
       return cb(err) if err?
       async.map(enrolls,
                 ((enrollEvent, cb2) ->
-                  computeScore(events, gameByUri, enrollEvent.user, enrollEvent.ageCategory, {}, (err, score) ->
+                  computeScore(events, gameByUri, enrollEvent.user, enrollEvent.ageCategory || "high", {}, (err, score) ->
                     cb2(err) if err?
                     enrollEvent.score = score
                     cb2(null, enrollEvent)
@@ -25,7 +27,7 @@ exports.findOneUser = (events, gameByUri, uri, cb, opts) ->
    events.findOne({type:"enroll", user: uri, cancelled: {$ne: true}}, (err, doc) ->
       return cb(err) if err?
       return cb(null, doc) if not doc?
-      computeScore(events, gameByUri, uri, doc.ageCategory, opts, (err, score) ->
+      computeScore(events, gameByUri, uri, doc.ageCategory || "high", opts, (err, score) ->
         cb(err) if err?
         doc.score = score
         cb(null, doc)
@@ -88,12 +90,15 @@ computeScore = (events, gameByUri, user, ageCategory, opts, cb) ->
     )
 
 rankResult = (boughtRankPrizes, currentRank) ->
+  ranks = ["cadet", "captain", "colonel", "commander", "commodore"]
   {
     rank: r
     label: r[0].toUpperCase() + r.substr(1)
     havePrize: r in boughtRankPrizes
     isCurrent: r == currentRank
-  } for r in ["cadet", "captain", "colonel", "commander", "commodore"]
+    alreadyAchieved: ranks.indexOf(r) < ranks.indexOf(currentRank)
+    notAchieved: ranks.indexOf(r) > ranks.indexOf(currentRank)
+  } for r in ranks
     
 computeRank = (points, perGame, ageCategory) ->
   distinctGames = gameCount(perGame, 1)
