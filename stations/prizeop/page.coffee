@@ -1,12 +1,11 @@
-gameId = window.location.pathname.split("/")[3]
-thisGame = identifiers.gameUri(gameId)
+thisGame = "https://gametag.bigast.com/stations/prize"
 
 class Model
   constructor: ->
-    @game = ko.observable(null)
-    @lastUser = ko.observable(null)
-    @lastUserData = ko.observable(null)
-    @lastScanTime = ko.observable(0)
+    @allGames = ko.observable(null)
+    @lastScan = ko.observable(null)
+    @userData = ko.observable(null)
+    @allUserPrizes = ko.observable(null)
 
     @now = ko.observable()
     setInterval((() => @now(new Date())), 1000)
@@ -17,16 +16,21 @@ class Model
     $.getJSON(identifiers.localSite(thisGame), (data) =>
       @game(data)
     )
-    
+
+  canBuy: (ach) =>
+    true
+    # do we have enough points, or has this rank been earned and its prize not bought yet?
+            
   award: (ach, uiEvent) =>
-    postButton(uiEvent, "../../../events", {
-      type: "achievement",
+    postButton(uiEvent, "../../events", {
+      type: "buy",
       user: @lastUser(),
-      game: thisGame,
-      won: ach})
-    
+      points: 33
+      #rankPrize: 'cadet'
+      })
+
   summarizeWin: window.summarizeWin
-  bye: () -> operatorconsole.bye(thisGame)
+  bye: () -> operatorconsole.bye(thisGame)   
     
 model = new Model()
 
