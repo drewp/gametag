@@ -15,6 +15,8 @@ class Model
       if @displayedUser()?
         $.getJSON identifiers.localSite(@displayedUser()), (data) =>
           @recentUserData(data)
+      else
+        @recentUserData(null)
     
     updateGameReport = ko.computed =>
       if not @allGames()? or not @recentUserData()?
