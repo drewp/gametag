@@ -38,7 +38,7 @@ model = new Model()
 reloadEvents = () ->
   # this is to notice prize table scans 
   $.getJSON("../../events/all", (data) ->
-    latestScan = _.find(data.events, (ev) -> (ev.type == "scan" && ev.game == thisGame))
+    latestScan = _.find(data.events, (ev) -> (ev.type == "scan" && ev.game == thisGame && ev.cancelled != true))
     if latestScan?
       onScan(latestScan)
   )
