@@ -51,7 +51,12 @@ $.getJSON "../../games", (data) ->
       model.userDataChanged(new Date()) 
       return
 
+    console.log("new ev", ev.user, model.displayedUser())
     if ev.user == model.displayedUser()
       model.userDataChanged(new Date())
+    if ev.type == "scan"
+      if not ev.user?
+        model.displayedUser(null)
+      model.displayedUser(ev.user)
   )
   ko.applyBindings(model)
