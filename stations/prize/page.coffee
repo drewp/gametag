@@ -38,7 +38,7 @@ model = new Model()
 reloadEvents = () ->
   # this is to notice prize table scans 
   $.getJSON("../../events/all", (data) ->
-    latestScan = _.find(data.events, (ev) -> (ev.type == "scan" && ev.game == thisGame))
+    latestScan = _.find(data.events, (ev) -> (ev.type == "scan" && ev.game == thisGame && ev.cancelled != true))
     if latestScan?
       onScan(latestScan)
   )
@@ -51,7 +51,12 @@ $.getJSON "../../games", (data) ->
       model.userDataChanged(new Date()) 
       return
 
+    console.log("new ev", ev.user, model.displayedUser())
     if ev.user == model.displayedUser()
       model.userDataChanged(new Date())
+    if ev.type == "scan"
+      if not ev.user?
+        model.displayedUser(null)
+      model.displayedUser(ev.user)
   )
   ko.applyBindings(model)
