@@ -13,7 +13,10 @@ exports.userView = (events, gameByUri, uri, res) ->
         ""+moment(ev.t).format('h:mm:ss a')+": "+(switch ev.type
           when "scan"
             g = gameByUri[ev.game]
-            "Played "+g.label+" and got "+(g.pointsForPlaying || 0)+" points"
+            if not g?
+              "Played an unknown game"
+            else:
+              "Played "+g.label+" and got "+(g.pointsForPlaying || 0)+" points"
           when "achievement"
             ev.won.label+ " and won "+points.summarizeWin(ev.won)
           )
