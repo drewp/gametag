@@ -8,7 +8,8 @@ class Model
     @displayedUser = ko.observable(null)
     @recentUserData = ko.observable(null)
     @userDataChanged = ko.observable(null) # just an event trigger
-    @gameReport = ko.observable(null)
+
+
 
     updateUserScore = ko.computed =>
       @userDataChanged()
@@ -17,14 +18,32 @@ class Model
           @recentUserData(data)
       else
         @recentUserData(null)
-    
-    updateGameReport = ko.computed =>
+
+    @pointsToSpend = ko.computed =>
       if not @allGames()? or not @recentUserData()?
-        return @gameReport(null)
+        return 0
+      
+      score = @recentUserData().score
+      Math.max(0, score.points - score.absSpentPoints)
+    
+    @gameReport = ko.computed =>
+      if not @allGames()? or not @recentUserData()?
+        return null
         
-      @gameReport(_.extend({
+      _.extend({
           played: @recentUserData().score.perGame[g.uri]
-        },  g) for g in @allGames())
+        },  g) for g in @allGames()
+
+    @catalog = ko.computed =>
+      if not @allGames()? or not @recentUserData()?
+        return null
+      toSpend = @pointsToSpend()
+
+      _.extend({
+          cantAfford: p.points > toSpend,
+          avail: p.points <= toSpend
+        }, p) for p in window.prizes
+      
 
 onScan = (scanEvent) ->
   return if scanEvent.game != thisGame
