@@ -1,7 +1,8 @@
 
 watchEventForNewScan = (model, thisGame, ev) ->
   # act on this new event if is a scan or clear for our screen
-  if _.findWhere([ev], {type: "scan", game: thisGame}) != null
+  if _.findWhere([ev], {type: "scan", game: thisGame, cancelled: false})?
+    console.log("watch found a great event", ev)
     if ev.user?
       model.currentScan(ev)
     else
@@ -59,7 +60,7 @@ window.operatorconsole =
   getLatestScan: (model, toRoot, thisGame) ->
     # find latest scan for this game, call onNewestScan with the event
     $.getJSON(toRoot + "/events/all", (data) ->
-      newestScan = _.findWhere(data.events, {type: "scan", game: thisGame})
+      newestScan = _.findWhere(data.events, {type: "scan", game: thisGame, cancelled: false})
       watchEventForNewScan(model, thisGame, newestScan)
     )
 

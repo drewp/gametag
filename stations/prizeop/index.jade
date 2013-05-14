@@ -3,11 +3,17 @@ html
   head
     title prize station
     link(rel='stylesheet', type='text/css', href='../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../../shared/operatorconsole.css')
     link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
     link(rel='stylesheet', href='style.css')
-  body
-    h1 Prize operator console
+    meta(name="viewport", content="width=device-width")
 
+  body
+    h1 Game operator console
+
+    div.gameName
+      | Prize booth
+      
     include ../../shared/scanopwidget
 
     div(data-bind="foreach: availablePrizes")
