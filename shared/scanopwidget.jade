@@ -1,18 +1,27 @@
 fieldset
   legend Last scanned at this station
-  div
-    | User: 
-    span(data-bind="text: currentScan() ? currentScan().user : '(waiting for scan)'")
-  div(data-bind="if: currentScan()")
-    | Scan time: 
-    span(data-bind="text: scanAgo")
-  div(data-bind="with: currentUserData")
-    img(class="user", data-bind="attr: {src: pic}")
+
+  div.userId
     div
-      | Name: 
-      span(data-bind="text: label")
-    div
-      | Score:
-      span(data-bind="text: JSON.stringify(score)")
+      div(data-bind="with: currentUserData")
+        img(class="user", data-bind="attr: {src: pic}")
+    div      
+      div
+        | User: 
+        span(data-bind="text: currentScan() ? identifiers.localSite(currentScan().user) : '(waiting for scan)'")
+      div(data-bind="if: currentScan()")
+        | Scan time: 
+        span(data-bind="text: scanAgo")
+      div(data-bind="with: currentUserData")
+        div
+          | Name: 
+          span(data-bind="text: label")
+        div
+          | Points: 
+          span(data-bind="text: score.points")
+        div
+          | Games played: 
+          span(data-bind="text: score.games")
+
   div
     button(type="submit", data-bind="click: $root.bye") Clear this guest
