@@ -68,8 +68,6 @@ class NewScoreEvents
 
 class Model
   constructor: ->
-    @simUsers = (identifiers.absolute('/users/'+x) for x in [1,2,3,8,12,13])
-
     @newScoreEvents = new NewScoreEvents()
     @recentUserData = ko.observable(null)
     @userDataChanged = ko.observable(null) # just an event trigger
@@ -93,9 +91,6 @@ class Model
           .hide()
           .removeClass("scorecardAnim")
                         
-  simUserScan: (who) =>
-    $.post("../../../events", {type: "scan", user: who, game: thisGame}, (ev)->)
-    
   bgImage: =>
     "bg/" + gameId + ".jpg"
 
