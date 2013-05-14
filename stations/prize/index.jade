@@ -50,8 +50,8 @@ html
       table
         tbody(data-bind="foreach: $root.catalog")
           tr(data-bind="css: {cantAfford: cantAfford, avail: avail}")
-            td(data-bind="text: label")
-            td(data-bind="text: points")
+            td.label(data-bind="text: label")
+            td.points(data-bind="text: points")
             td.permission
             
     div.rankPrizes
