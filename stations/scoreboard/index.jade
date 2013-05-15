@@ -23,7 +23,7 @@ html
             tbody(data-bind="foreach: _.values(_.pick($parent.users(), _.range($data, $parent.users().length, $root.numColumns)))")
               tr(data-bind="css: classes")
                 td.who
-                  img.badge(data-bind="attr: {src: pic}")
+                  img.badge(data-bind="attr: {src: identifiers.localSite(pic)}")
                   div(data-bind="text: label || '?'")
                 td.nGames
                   span(data-bind="text: score.games")
@@ -36,5 +36,6 @@ html
     script(src='../../3rdparty/knockout-2.2.1.js')
     script(src='../../3rdparty/underscore-1.4.4-min.js')
     script(src='../../shared/websocket.js')
+    script(src='../../shared/identifiers.js')
     script(src='../../shared/netconfig.js')
     script(src="page.js")
