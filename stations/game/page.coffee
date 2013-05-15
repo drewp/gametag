@@ -76,7 +76,7 @@ class Model
       @userDataChanged()
       cur = @newScoreEvents.currentUser()
       if cur?
-        $.getJSON cur, (data) =>
+        $.getJSON identifiers.localSite(cur), (data) =>
           @recentUserData(data)
       else
         @recentUserData(null)
@@ -99,7 +99,7 @@ model = new Model()
 $(".scorecard").hide()
 
 reloadEvents = () ->     
-  $.getJSON(".././../../events/all", (data) ->
+  $.getJSON("../../../events/all", (data) ->
     model.newScoreEvents.rebuild(data.events)
   )
 
