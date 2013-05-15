@@ -1,0 +1,59 @@
+doctype
+html
+  head
+    link(rel='stylesheet', type='text/css', href='../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    style
+      .columns > div {
+        display: inline-block;
+        vertical-align: top;
+      }
+      .qrUrl, .station {
+        display: inline-block;
+        margin: 2px;
+        padding: 4px;
+        border-radius: 8px;
+        border: 1px solid hsl(0, 0%, 50%);
+        text-decoration: none;
+        background: hsl(0, 0%, 41%);
+        color: hsl(0, 0%, 0%);
+        font-size: 150%;
+      }
+      .qrUrl { background: hsl(41, 40%, 67%); }
+      .station { background: hsl(124, 40%, 67%); }
+      .hover { background: white; }
+      .active { border-color: yellow;  }
+    title Create scan event
+  body
+    h1 Create scan event
+
+    h2 Drag a QR link to a camera to simulate a scan 
+
+    div.columns
+      div
+        h3 Scan this uri
+        div(data-bind="foreach: qrCodes")
+          div
+            a.qrUrl(data-bind="attr: {href: uri, click: $root.noClicks}")
+              i.icon-qrcode
+              | 
+              span(data-bind="text: desc")
+      div
+        h3 at this station
+        div(data-bind="foreach: stations")
+          div
+            a.station(data-bind="attr: {href: uri, click: $root.noClicks}")
+              i.icon-camera
+              | 
+              span(data-bind="text: desc")
+      
+    p#status
+      | This page does not autorefresh
+    
+    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='../../3rdparty/knockout-2.2.1.js')
+    script(src='../../3rdparty/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js')
+    script(src='../../shared/websocket.js')
+    script(src='../../shared/netconfig.js')
+    script(src='../../shared/identifiers.js')
+    script(src="page.js")

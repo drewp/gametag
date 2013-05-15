@@ -12,12 +12,6 @@ html
     div.bgimg
         img.bg(src="bg/1280x800.jpg")
 
-    .demoButtons
-      | Simulate a scan from
-      // ko foreach: simUsers
-      button(data-bind="click: $root.simUserScan, text: $data")
-      // /ko
-
     p#status
 
     div.fg

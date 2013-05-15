@@ -18,11 +18,11 @@ class Model
       console.log("tospend", pointsToSpend)
 
       ret = []
-      for size in [2500, 7000, 15000]
+      for prize in window.prizes
         ret.push({
-          label: "Give "+size+" point prize"
-          points: -size
-          enable: pointsToSpend >= size
+          label: "Give "+prize.label+" "+prize.points+" point prize"
+          points: -prize.points
+          enable: pointsToSpend >= prize.points
           whyNot: "not enough points"
         })
 

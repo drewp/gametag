@@ -8,7 +8,8 @@ class Model
     @displayedUser = ko.observable(null)
     @recentUserData = ko.observable(null)
     @userDataChanged = ko.observable(null) # just an event trigger
-    @gameReport = ko.observable(null)
+
+
 
     updateUserScore = ko.computed =>
       @userDataChanged()
@@ -17,14 +18,32 @@ class Model
           @recentUserData(data)
       else
         @recentUserData(null)
-    
-    updateGameReport = ko.computed =>
+
+    @pointsToSpend = ko.computed =>
       if not @allGames()? or not @recentUserData()?
-        return @gameReport(null)
+        return 0
+      
+      score = @recentUserData().score
+      Math.max(0, score.points - score.absSpentPoints)
+    
+    @gameReport = ko.computed =>
+      if not @allGames()? or not @recentUserData()?
+        return null
         
-      @gameReport(_.extend({
+      _.extend({
           played: @recentUserData().score.perGame[g.uri]
-        },  g) for g in @allGames())
+        },  g) for g in @allGames()
+
+    @catalog = ko.computed =>
+      if not @allGames()? or not @recentUserData()?
+        return null
+      toSpend = @pointsToSpend()
+
+      _.extend({
+          cantAfford: p.points > toSpend,
+          avail: p.points <= toSpend
+        }, p) for p in window.prizes
+      
 
 onScan = (scanEvent) ->
   return if scanEvent.game != thisGame
@@ -38,7 +57,7 @@ model = new Model()
 reloadEvents = () ->
   # this is to notice prize table scans 
   $.getJSON("../../events/all", (data) ->
-    latestScan = _.find(data.events, (ev) -> (ev.type == "scan" && ev.game == thisGame && ev.cancelled != true))
+    latestScan = _.findWhere(data.events, {type: "scan", game: thisGame, cancelled: false})
     if latestScan?
       onScan(latestScan)
   )
@@ -54,7 +73,7 @@ $.getJSON "../../games", (data) ->
     console.log("new ev", ev.user, model.displayedUser())
     if ev.user == model.displayedUser()
       model.userDataChanged(new Date())
-    if ev.type == "scan"
+    if ev.type == "scan" && ev.game == thisGame
       if not ev.user?
         model.displayedUser(null)
       model.displayedUser(ev.user)

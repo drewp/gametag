@@ -3,12 +3,19 @@ html
   head
     title game station
     link(rel='stylesheet', type='text/css', href='../../../shared/style.css')
+    link(rel='stylesheet', type='text/css', href='../../../shared/operatorconsole.css')
     link(rel='stylesheet', type='text/css', href='../../3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
     link(rel='stylesheet', href='style.css')
+
+    meta(name="viewport", content="width=device-width")
+    
   body
     h1
       div Game operator console
-      div.gameName(data-bind="text: game() && game().label")
+
+    div.gameName
+      | Station: 
+      span(data-bind="text: game() && game().label")
 
     include ../../shared/scanopwidget.jade
           

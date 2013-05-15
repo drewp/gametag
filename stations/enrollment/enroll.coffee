@@ -78,7 +78,11 @@ class Model
     @printEnabled = ko.computed(=> @currentUserUri())
     @enteredName = ko.observable("")
     @ageCategory = ko.observable(null)
-    @ageCategories = ["elementary", "middle", "high"]
+    @ageCategories = [
+      {label: "elementary", accesskey: "l"}
+      {label: "middle", accesskey: "m"}
+      {label: "high", accesskey: "h"}
+      ]
 
   setBadge: =>
     ko.computed =>
@@ -90,6 +94,7 @@ class Model
   grab: =>
     camera.grab(badge.setPic, @currentPicUri)
     $("#enterName").focus()
+    return false
 
   reset: =>
     @enteredName("")

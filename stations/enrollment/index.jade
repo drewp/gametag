@@ -16,10 +16,10 @@ html
           .scanner
 
         div
-          button(data-bind="click: grab, enable: grabEnabled")
+          button(data-bind="click: grab, enable: grabEnabled", accesskey="G")
             | 
             i.icon-camera
-            |  Grab
+            |  Grab (Alt+G)
         p
           a(href='?cam=demo') use demo video instead of webcam
       .col.fluid
@@ -28,22 +28,30 @@ html
           div#badge(style="position:relative;display:block;margin-top:300px;height:330px")
           .scanner
         div
-          | Name for badge:
-          input#enterName(data-bind="value: enteredName, valueUpdate: 'afterkeydown'")
+          | Name for badge (Alt+N):
+          input#enterName(accesskey="n", data-bind="value: enteredName, valueUpdate: 'afterkeydown'")
         div
           | Age category:
-          select(data-bind="options: ageCategories, optionsCaption: 'Choose...', value: ageCategory")
+          div(data-bind="foreach: ageCategories")
+            div
+              input(type='radio', data-bind="attr: {value: label, accesskey: accesskey}, checked: $parent.ageCategory")
+              span(data-bind="text: label")
+              |  (Alt+
+              span(data-bind="text: accesskey.toUpperCase()")
+              | )
+
         div
-          button(data-bind="click: makeUser, enable: makeUserEnabled")
+          button(accesskey="u", data-bind="click: makeUser, enable: makeUserEnabled")
             i.icon-plus
-            |  Make new user
-          button(data-bind="click: print, enable: printEnabled")
+            |  Make new user (Alt+U)
+          button(accesskey="p", data-bind="click: print, enable: printEnabled")
             i.icon-print
-            span 
             span#print Print
-          button(data-bind="click: reset, enable: resetEnabled")
+            | 
+            span (Alt+P)
+          button(accesskey="r", data-bind="click: reset, enable: resetEnabled")
             i.icon-sign-blank
-            |  Reset
+            |  Reset (Alt+R)
             
     #status
     canvas(style="display: none", width="320", height="240")

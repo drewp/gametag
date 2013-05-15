@@ -38,7 +38,7 @@ new ReconnectingWebSocket(
     operatorconsole.watchEventForNewScan(model, thisGame, ev)
 
     if ev.type == "cancel"
-      return operatorconsole.getLatestScan(model, "../..", thisGame)
+      return operatorconsole.getLatestScan(model, "../../..", thisGame)
     if ev.type in ["scan", "achievement"]
       operatorconsole.reloadUser(model)
 )

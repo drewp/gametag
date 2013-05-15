@@ -41,6 +41,19 @@ html
               span(data-bind="text: score.absSpentPoints")
             div.bar(data-bind="style: {height: (score.absSpentPoints / $root.maxPoints * 100)+'%'}")
 
+    div.catalog
+      h2 Prizes
+      div
+        | You have 
+        span(data-bind="text: $root.pointsToSpend")
+        |  points to spend
+      table
+        tbody(data-bind="foreach: $root.catalog")
+          tr(data-bind="css: {cantAfford: cantAfford, avail: avail}")
+            td.label(data-bind="text: label")
+            td.points(data-bind="text: points")
+            td.permission
+            
     div.rankPrizes
         h2 Rank
           table
@@ -66,4 +79,5 @@ html
     script(src='../../../shared/points.js')
     script(src='../../../shared/netconfig.js')
     script(src='../../../shared/identifiers.js')
+    script(src='../../../shared/prizes.js')
     script(src="page.js")
