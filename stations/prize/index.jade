@@ -41,6 +41,20 @@ html
               span(data-bind="text: score.absSpentPoints")
             div.bar(data-bind="style: {height: (score.absSpentPoints / $root.maxPoints * 100)+'%'}")
 
+    div.rankPrizes
+        h2 Rank
+        table
+          tbody(data-bind="foreach: score.rank.levels")
+            tr(data-bind="css: {alreadyAchieved: alreadyAchieved, isCurrent: isCurrent, havePrize: havePrize, notAchieved: notAchieved}")
+              td.label
+                span(data-bind="text: label")
+              td 
+                div(data-bind="if: isCurrent || alreadyAchieved")
+                  span(data-bind="if: havePrize")
+                    | Have prize
+                  span(data-bind="if: !havePrize && rank != 'cadet'")
+                    | Prize available
+
     div.catalog
       h2 Prizes
       div
@@ -53,20 +67,12 @@ html
             td.label(data-bind="text: label")
             td.points(data-bind="text: points")
             td.permission
-            
-    div.rankPrizes
-        h2 Rank
-          table
-            tbody(data-bind="foreach: score.rank.levels")
-              tr(data-bind="css: {alreadyAchieved: alreadyAchieved, isCurrent: isCurrent, havePrize: havePrize, notAchieved: notAchieved}")
-                td.label
-                  span(data-bind="text: label")
-                td 
-                  div(data-bind="if: isCurrent || alreadyAchieved")
-                    span(data-bind="if: havePrize")
-                      | Have prize
-                    span(data-bind="if: !havePrize && rank != 'cadet'")
-                      | Prize available
+
+    div.pointsAvail
+      div(style="display: inline-block") 
+        h2 Points available
+        div.pointsAvailCenter
+          span(data-bind="text: $root.pointsToSpend")
 
     // /ko
   
