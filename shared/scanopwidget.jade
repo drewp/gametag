@@ -4,7 +4,7 @@ fieldset
   div.userId
     div
       div(data-bind="with: currentUserData")
-        img(class="user", data-bind="attr: {src: pic}")
+        img(class="user", data-bind="attr: {src: identifiers.localSite(pic)}")
     div      
       div
         | User: 
