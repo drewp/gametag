@@ -11,7 +11,7 @@
           img(data-bind="attr: {src: identifiers.localSite(pic)}")
         div.label(data-bind="text: label")
         span.rank
-          div(data-bind="text: score.rank.current.label + 'mmodorre'")
+          div(data-bind="text: score.rank.current.label")
           div 
             span.have(data-bind="text: new Array(score.rank.current.stars+1).join('⍟')")
             span.need(data-bind="text: new Array(5-score.rank.current.stars+1).join('⍟')")
