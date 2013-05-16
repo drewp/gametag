@@ -15,6 +15,16 @@ class Model
       @userDataChanged()
       if @displayedUser()?
         $.getJSON identifiers.localSite(@displayedUser()), (data) =>
+          realPoints = data.score.points
+          data.score.points = 0
+          for p in [0 .. realPoints] by 700
+            offset = 1500 * p / realPoints
+            setTimeout(((p2) => ( () => 
+              data.score.points = p2
+              @recentUserData(data) ) )(p),offset)
+          setTimeout((() => 
+            data.score.points = realPoints
+            @recentUserData(data)),1501)
           @recentUserData(data)
       else
         @recentUserData(null)
