@@ -6,6 +6,8 @@ _ = require("../3rdparty/underscore-1.4.4-min.js")
 lpr = (filename, destinationPrinter, jobName, cb) ->
   cmdline = "lp " +
        filename +
+       # 'lpoptions -l' to get these
+       " -o PageSize=Photo4x6.FB -o OutputMode=Normal -o InputSlot=PhotoTray" +
        " -d " + destinationPrinter +
        " -t " + jobName
   console.log("run: "+cmdline)
