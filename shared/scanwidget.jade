@@ -1,20 +1,21 @@
 .scanArea
   .scan
     .mode.idleMode(data-bind="visible: !recentUserData()")
-      div Waiting for badge scan
+      h2 Waiting for badge scan
       div
         img(src="../../../shared/noise.gif")
     .mode.decodedMode(data-bind="visible: recentUserData()")
-      div Identified
+      h2 Identified
       div(data-bind="with: recentUserData")
         div
           img(data-bind="attr: {src: identifiers.localSite(pic)}")
-        div(data-bind="text: label")
+        div.label(data-bind="text: label")
         span.rank
-          span(data-bind="text: score.rank.current.label")
-          span.have(data-bind="text: new Array(score.rank.current.stars+1).join('⍟')")
-          span.need(data-bind="text: new Array(5-score.rank.current.stars+1).join('⍟')")
-        div
+          div(data-bind="text: score.rank.current.label + 'mmodorre'")
+          div 
+            span.have(data-bind="text: new Array(score.rank.current.stars+1).join('⍟')")
+            span.need(data-bind="text: new Array(5-score.rank.current.stars+1).join('⍟')")
+        div.points
           | Current points: 
           span(data-bind="text: score.points")
   
