@@ -21,6 +21,14 @@ html
           th
       tbody(data-bind="foreach: events")
         tr(data-bind="css: $parent.eventRowClasses($data), visible: $parent.rowVisible($data)")
+          td
+            button(data-bind="click: $parent.toggleCancelEvent")
+              // ko if: cancelled
+              | Uncancel
+              // /ko
+              // ko if: !cancelled
+              | Cancel
+              // /ko
           td.time
             a(data-bind="attr: {href: identifiers.localSite($data.uri)}, text: $parent.prettyTime($data)")
           td.eventType(data-bind="attr: {title: 'type: '+type}")
@@ -34,15 +42,6 @@ html
               a(data-bind="attr: {href: identifiers.localSite($data)}") QR
               
             span(data-bind="html: $parent.eventSpecificHtml($data)")
-          td
-            // draw this differently if we're already cancelled
-            button(data-bind="click: $parent.toggleCancelEvent")
-              // ko if: cancelled
-              | Uncancel
-              // /ko
-              // ko if: !cancelled
-              | Cancel
-              // /ko
 
     p#status
     

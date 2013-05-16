@@ -69,8 +69,7 @@ model =
 readEvents = ->
   # append all events to the model
   $.getJSON "../../events/all", {}, (data) ->
-    model.events.removeAll()
-    data.events.forEach((ev) -> model.events.push(ev))
+    model.events(data.events)
 
 ko.computed ->
   model.events()
