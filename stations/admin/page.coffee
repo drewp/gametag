@@ -77,7 +77,6 @@ ko.computed ->
   $("img").lazyload({threshold: 200})
   
 new ReconnectingWebSocket(
-  socketRoot + "/events",
   (() -> readEvents()),
   ((ev) ->
     # prepend a new event to the model.

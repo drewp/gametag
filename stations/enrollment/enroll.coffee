@@ -128,5 +128,5 @@ camera = new Camera(document.location.search == "?cam=demo", model.picCopying)
 badge = new Badge($("#badge"), (-> model.reset())) 
 model.setBadge(badge)
 
-new ReconnectingWebSocket(socketRoot + "/events", (() ->), ((msg) ->))
+new ReconnectingWebSocket((() ->), ((msg) ->))
 ko.applyBindings(model)

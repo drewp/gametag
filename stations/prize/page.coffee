@@ -64,7 +64,7 @@ reloadEvents = () ->
 
 $.getJSON "../../games", (data) ->
   model.allGames(_.sortBy(data.games, ((k,v) -> k)))
-  new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
+  new ReconnectingWebSocket(reloadEvents, (ev) ->
     if ev.type == 'cancel'
       reloadEvents()
       model.userDataChanged(new Date()) 

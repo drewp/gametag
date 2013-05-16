@@ -19,7 +19,7 @@ readEvents = ->
 
     model.users(_.first(users, model.maxTopUsers))
     
-new ReconnectingWebSocket(socketRoot + "/events", readEvents, (msg) ->
+new ReconnectingWebSocket(readEvents, (msg) ->
   readEvents()
 )
         
