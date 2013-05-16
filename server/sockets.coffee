@@ -1,14 +1,22 @@
-WebSocketServer = require('websocket').server
+io = require('socket.io')
 
 exports.Sockets = class Sockets
   # one-way websocket for sending events back out to the
   # browsers. Clients just use straight HTTP for incoming communications.
 
   constructor: (server, path) ->
-    # connection tracker is based on
-    # https://github.com/Worlize/WebSocket-Node/wiki/How-to:-List-all-connected-sessions-&-Communicating-with-a-specific-session-only
-    maxId = 0
+    
+
     @connectedSockets = {} # id : connection
+
+    @io = io.listen(server)
+
+    @io.sockets.on('connection', (socket) =>
+      console.log("new sock connection " + socket.id)
+      @connectedSockets[socket.id] = socket
+    )
+
+    return 
         
     @wsServer = new WebSocketServer({
       httpServer: server,
@@ -30,8 +38,7 @@ exports.Sockets = class Sockets
       )
     )
 
-  sendToAll: (msg) ->
-    s = JSON.stringify(msg)
+  sendToAll: (msg) =>
     for _, conn of @connectedSockets
         console.log("sending to", conn.remoteAddress)
-        conn.sendUTF(s)
+        conn.emit('event', msg)

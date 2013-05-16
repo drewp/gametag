@@ -21,5 +21,5 @@ $.getJSON "../../users", (data) =>
   data.users.reverse()
   model.users(data.users)
 
-new ReconnectingWebSocket(socketRoot + "/events", (() ->), ((msg) ->))
+new ReconnectingWebSocket((() ->), ((msg) ->))
 ko.applyBindings(model)

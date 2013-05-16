@@ -1,20 +1,38 @@
-window.ReconnectingWebSocket = (url, onReconnect, onMessage) ->
+window.ReconnectingWebSocket = (onReconnect, onMessage) ->
   connect = ->
-    ws = new WebSocket(url)
-    ws.onopen = ->
+
+    socket = io.connect('//', {
+      # https://github.com/LearnBoost/Socket.IO/wiki/Configuring-Socket.IO#client
+      'max reconnection attempts': 500
+    })
+
+    setStatus = (quality, msg) ->
+      $("#status").text(" " + msg).prepend($("<i>").addClass(
+        switch quality
+          when "good" then "icon-bolt"
+          when "bad" then "icon-refresh icon-spin"
+        ))
+
+    socket.on "reconnect_failed", (r) ->
+      setStatus("bad", "reconnect failed")
+
+    socket.on "error", (r) ->
+      setStatus("bad", "error " + r)
+
+    socket.on "connecting", (how) ->
+      setStatus("bad", "connecting via " + how)
+
+    socket.on "connect", () ->
+      setStatus("good", "connected")
       onReconnect()
-      $("#status").text(" connected").prepend($("<i>").addClass("icon-bolt"))
 
-    ws.onerror = (e) ->
-      $("#status").text("error: " + e)
+    socket.on "disconnect", ->
+      setStatus("bad", "disconnected")
 
-    ws.onclose = ->
-      $("#status").text(" disconnected").prepend($("<i>").addClass("icon-refresh icon-spin"))
-      
-      # this should be under a requestAnimationFrame to
-      # save resources
-      setTimeout(connect, 2000)
+    socket.on "connect_failed", (r) ->
+      setStatus("bad", "connect failed: " + r)
 
-    ws.onmessage = (evt) ->
-      onMessage(JSON.parse(evt.data))
+    socket.of("").on "event", (r) ->
+      onMessage(r)
+    
   connect()

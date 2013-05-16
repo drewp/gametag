@@ -69,15 +69,13 @@ model =
 readEvents = ->
   # append all events to the model
   $.getJSON "../../events/all", {}, (data) ->
-    model.events.removeAll()
-    data.events.forEach((ev) -> model.events.push(ev))
+    model.events(data.events)
 
 ko.computed ->
   model.events()
   $("img").lazyload({threshold: 200})
   
 new ReconnectingWebSocket(
-  socketRoot + "/events",
   (() -> readEvents()),
   ((ev) ->
     # prepend a new event to the model.

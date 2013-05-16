@@ -10,16 +10,18 @@ exports.userView = (events, gameByUri, uri, res) ->
       res.send(404)
     else
       eventDesc = (ev) ->
-        ""+moment(ev.t).format('h:mm:ss a')+": "+(switch ev.type
+        desc = (switch ev.type
           when "scan"
             g = gameByUri[ev.game]
             if not g?
               "Played an unknown game"
-            else:
+            else
               "Played "+g.label+" and got "+(g.pointsForPlaying || 0)+" points"
           when "achievement"
             ev.won.label+ " and won "+points.summarizeWin(ev.won)
-          )
+        )
+        
+        ""+moment(ev.t).format('h:mm:ss a')+": "+desc
       userDoc.score.events = ({t: ev.t, desc: eventDesc(ev)} for ev in userDoc.score.events)
 
       res.render("stations/userview/index.jade", {

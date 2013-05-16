@@ -107,7 +107,7 @@ $.getJSON identifiers.localSite(thisGame), (data) =>
   thisGameData = data
   # slightly easier (but slower) to get the game data before anything else
 
-  new ReconnectingWebSocket(socketRoot + "/events", reloadEvents, (ev) ->
+  new ReconnectingWebSocket(reloadEvents, (ev) ->
     if ev.type == 'cancel'
       reloadEvents()
       model.userDataChanged(new Date()) 

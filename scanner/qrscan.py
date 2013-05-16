@@ -75,7 +75,7 @@ class ScannerLoop(app.EventLoop):
                     # todo: a qr that says 'station=/some/uri' should
                     # change the station we're sending to /some/uri
 
-                    self.sounds.play('scanned-person.wav')
+                    self.sounds.play('chirp2.wav')
                     print "found", symbol.data, symbol.location
                     print post(self.args.post,
                          timeout=2,

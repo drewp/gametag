@@ -60,7 +60,6 @@ class Model
 model = new Model()
 
 new ReconnectingWebSocket(
-  socketRoot + "/events",
   () -> operatorconsole.getLatestScan(model, "../..", thisGame),
   (ev) ->
     operatorconsole.watchEventForNewScan(model, thisGame, ev)
