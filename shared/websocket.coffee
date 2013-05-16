@@ -20,7 +20,11 @@ window.ReconnectingWebSocket = (onReconnect, onMessage) ->
       setStatus("bad", "error " + r)
 
     socket.on "connecting", (how) ->
-      setStatus("good", "connected via " + how)
+      setStatus("bad", "connecting via " + how)
+
+    socket.on "connect", () ->
+      setStatus("good", "connected")
+      onReconnect()
 
     socket.on "disconnect", ->
       setStatus("bad", "disconnected")
