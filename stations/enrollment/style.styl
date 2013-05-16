@@ -1,20 +1,18 @@
-
+body
+  width: 1280px
+  height: 800px
+  min-height: 700px
+  overflow: hidden
     
 .grid 
-    display: -webkit-flex;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 166px;
-    bottom: 60px;
+    position: relative
+    padding-left: 160px
 
-.col {
-    padding: 30px;
-}
-.fluid {
-    -webkit-flex: 1;
-    min-height: 100%;
-}
+.col 
+    padding: 0 30px 0 30px
+    display: inline-block;
+    vertical-align: top
+
 canvas { width: 320px; height: 240px; }
 button { padding: 10px; }
 
@@ -22,6 +20,10 @@ button { padding: 10px; }
     width: 310px;
     height: 259px;
     position: relative;
+    display: block;
+    margin-top: 300px;
+    height: 234px
+
 }
 #badge
   svg
@@ -29,21 +31,6 @@ button { padding: 10px; }
     top: -310px
   > * { position: absolute; }
   
-#qr {
-    left: 57px;
-    top: 58px;
-}
-#face {
-    left: 56px;
-    top: 231px;
-    width: 187px;
-    height: 133px;
-}
-#nametag {
-    left: 69px;
-    top: 222px;
-    background: rgba(255, 255, 255, .8);
-}
 
 .scannerArea
   position relative
