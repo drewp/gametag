@@ -10,6 +10,7 @@ exports.Sockets = class Sockets
     @connectedSockets = {} # id : connection
 
     @io = io.listen(server)
+    @io.set('log level', 1)
 
     @io.sockets.on('connection', (socket) =>
       console.log("new sock connection " + socket.id)
