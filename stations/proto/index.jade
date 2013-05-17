@@ -2,34 +2,43 @@ doctype html
 html
   head
     title intro
-    link(rel='stylesheet', href='static/style.css')
-  body
-    h1 Screen setup
-    p Set this screen to be:
-    li: a(href='/stations/enrollment/') enrollment station
-    li: a(href='/stations/scoreboard/') scoreboard station
-    li
-      a(href='/stations/prize/') prize station
-      | /
-      a(href='/stations/prizeop/') prize station operator
-    li: a(href='/stations/admin/') admin station
-    li: a(href='/stations/allusers/') list all users
-    li: a(href='/games/qr') QR codes for all games
-    li: a(href='/stations/fakescan/') create scan events
-    each g in locals.games
-      li
-        span= g.label
-        | 
-        a(href=g.uri) Game
-        |  / 
-        a(href=g.gameOp) Operator
+    link(rel='stylesheet', href='shared/style.css')
+    link(rel='stylesheet', type='text/css', href='3rdparty/FortAwesome-Font-Awesome-13d5dd3/css/font-awesome.min.css')
+    meta(name="viewport", content="width=device-width")
 
-    p
-      a(href='http://localhost:631/jobs') Print jobs (on localhost)
+  body.proto
+    section.forVolunteers.bigLinks
+      h1 Screen setup
+      h2 I am the game operator for:
+      each g in locals.games
+        li
+          a(href=g.gameOp)= g.label
+      li
+        a(href='/stations/prizeop/') Prize station
+    
+    section
+      h2 This is the game screen for:
+      each g in locals.games
+        li
+          a(href=g.uri)
+            =g.label
+    section
+      h2 Special stations
+      li: a(href='/stations/enrollment/') enrollment station
+      li: a(href='/stations/scoreboard/') scoreboard station
+      li
+        a(href='/stations/prize/') prize station
+        | 
+      li: a(href='/stations/admin/') admin station
+      li: a(href='/stations/allusers/') list all users
+      li: a(href='/games/qr') QR codes for all games
+      li: a(href='/stations/fakescan/') create scan events
+  
+      p
+        a(href='http://localhost:631/jobs') Print jobs (on localhost)
         
     p#status
-    script(src='../../3rdparty/jquery-1.9.1.min.js')
+    script(src='3rdparty/jquery-1.9.1.min.js')
     script(src='/socket.io/socket.io.js')
-    script(src='../../shared/websocket.js')
-    script(src='/socket.io/socket.io.js')
+    script(src='shared/websocket.js')
     script(src="page.js")

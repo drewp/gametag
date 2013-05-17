@@ -81,7 +81,7 @@ openMongo (games, gameByUri, events) ->
     e.postEvent(body, (ev) -> res.json(200, ev))
 
   app.get "/", (req, res) ->
-    games.find().toArray (err, results) ->
+    games.find().sort({label: 1}).toArray (err, results) ->
       return res.send(500) if err?
       for g in results
         g.uri = "/stations/game/"+g._id+"/"
