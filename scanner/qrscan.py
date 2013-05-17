@@ -66,6 +66,9 @@ class ScannerLoop(app.EventLoop):
         now = time.time()
 
         for symbol in img:
+            if not symbol.data.strip():
+                # sometimes we get stray scans when there's no real QR code around
+                continue
             if self.lastSeen.get(symbol.data, 0) < now - self.args.norepeat:
                 if self.station is None:
                     self.station = symbol.data
