@@ -80,6 +80,8 @@ class ScannerLoop(app.EventLoop):
                     print post(self.args.post,
                          timeout=2,
                          data={'game': self.station, 'qr': symbol.data})
+            else:
+                print "still see", symbol.data, now
             self.lastSeen[symbol.data] = now
 
 def main():

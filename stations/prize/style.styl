@@ -2,16 +2,24 @@ html
   background: hsl(0, 0%, 9%)
 
 body
-  width: 2560px
+  width: 2530px
   height: 1600px
   font-size: 20px
+  background: black
+
+h2
+  font-size: 30px
 
 .gamesPlayed table
   font-size: 30px
-  background: hsl(0, 0%, 17%)
+  width: 100%
+
 
   tr:nth-child(even)
-    background: hsl(0, 0%, 27%)
+    background: hsl(240, 100%, 15%)
+
+  tr:nth-child(odd)
+    background: hsl(0, 0%, 17%)
 
   td
     padding: 7px 20px
@@ -20,12 +28,12 @@ body
     font-weight: bold
     
 .pointsBar
-  width: 300px
-  height: 1000px
+  width: 250px
+  height: 750px
   margin: 0 45px
   position: relative
-  border: 1px solid white
-  background: gray
+  border: 2px solid white
+  background: black
 
   .label
     font-size: 40px;
@@ -38,33 +46,35 @@ body
     color: hsl(0, 0%, 0%);
     
   .bar
-    background: hsl(41, 67%, 54%);
+    background: hsl(39, 100%, 50%);
     position: absolute;
     bottom: 0;
-    right: 30px;
-    border: 1px solid hsl(0, 100%, 100%);
+    border: 2px solid hsl(0, 100%, 100%);
     border-bottom: 0;
-    left: 30px;
+    width: 100%
+    left: -2px
 
 .pointsBar.spent .bar
   background: hsl(204, 67%, 54%);
+  bottom: -2px
+  color: white
   
 .rankPrizes
+  width: 570px
   tr.alreadyAchieved td.label
     text-decoration: line-through
     color: gray
   tr.isCurrent td.label span
     display: inline-block;
-    border: 1px solid hsl(60, 100%, 50%);
-    border-radius: 10px;
+    //border: 1px solid hsl(60, 100%, 50%);
+    //border-radius: 10px;
     padding: 7px;
-    background: hsl(60, 41%, 29%);
+    //background: hsl(60, 41%, 29%);
     
   tr.notAchieved td.label
     color: hsl(0, 0%, 22%)
 
 .catalog tr.avail
-  color: yellow
   .permission:after
     content: "Available!"
 
@@ -75,11 +85,93 @@ body
     content: "Not enough points"
   
     
-.scanArea, .gamesPlayed, .pointGraphs, .rankPrizes, .catalog
-  border: 1px solid yellow
+.scanArea, .gamesPlayed, .pointGraphs, .rankPrizes, .catalog, .pointsAvail
+  border: 10px solid white
   display: inline-block
   vertical-align: top
   margin: 20px
   padding: 10px
 
+.scanArea
+  height: 878px
+  width: 570px
+  border: 10px solid hsl(39, 100%, 50%)
+  background: hsl(240, 100%, 15%)
+
+.pointGraphs
+  height: 878px
+  width: 700px
+
+.gamesPlayed
+  width: 1010px
+
+.rankPrizes
+  height: 410px
+
+.pointsAvail
+  width: 700px
+  height: 410px
+
+.pointsAvailCenter
+  width: 700px
+  font-size: 150px
+  color: hsl(39, 100%, 50%)
+  margin-top: 70px
+  text-align: center
+
+.catalog
+  width: 940px
+  height: 410px
+  padding-right: 45px
+  padding-left: 45px
+
+
+.catalog table
+  width: 100%
+  color: white
+
+  tr:nth-child(1)
+    background: hsl(39, 100%, 50%)
+    color: black
+
+  tr:nth-child(2)
+    background: hsl(240, 100%, 15%)
+
+  tr:nth-child(3)
+    background: hsl(0, 0%, 17%)
+
+  td
+    padding: 7px 20px
+
+  h2
+    margin-bottom: 0px
+
+.rankPrizes table
+  width: 100%
+  color: white
+
+  tr:nth-child(even)
+    background: hsl(240, 100%, 15%)
+
+  tr:nth-child(odd)
+    background: hsl(0, 0%, 17%)
+
+  tr:nth-child(1)
+    background: hsl(39, 100%, 50%)
+    color: black
+
+  td
+    padding: 7px 20px
+
+.scan
+  height: 100%
   
+.scanArea img
+  border: 5px solid white
+  width: 600px
+
+.rank
+  //background: none
+  color: hsl(39, 100%, 50%)
+  border: none
+  margin-bottom: 54px
