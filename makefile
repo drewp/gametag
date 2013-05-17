@@ -27,7 +27,7 @@ server/server.js: server/sockets.js \
                   shared/points.js
 
 import_game_data_to_mongo:
-	mongoimport --host bang --db gametag --collection games --drop --jsonArray --file startup/games.json
+	mongoimport --host $(or $(GAMETAG_MONGODB),localhost) --db gametag --collection games --drop --jsonArray --file startup/games.json
 
 install_python_deps_for_scanner:
 	sudo apt-get install python-requests python-opencv python-numpy python-pyglet python-zbar

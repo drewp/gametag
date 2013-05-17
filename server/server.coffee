@@ -37,7 +37,7 @@ randomId = (nChars) ->
 
 openMongo = (cb) ->
   client = new mongo.Db('gametag',
-                        new mongo.Server('bang', 27017),
+                        new mongo.Server(process.env.GAMETAG_MONGODB || 'localhost', 27017),
                         {w: 1, journal: true, fsync: true})
   client.open (err, _) ->
     throw err if err
