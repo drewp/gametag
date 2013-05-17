@@ -8,23 +8,28 @@ class Model
     @displayedUser = ko.observable(null)
     @recentUserData = ko.observable(null)
     @userDataChanged = ko.observable(null) # just an event trigger
-
+    @prevUser = null
 
 
     updateUserScore = ko.computed =>
       @userDataChanged()
       if @displayedUser()?
         $.getJSON identifiers.localSite(@displayedUser()), (data) =>
-          realPoints = data.score.points
-          data.score.points = 0
-          for p in [0 .. realPoints] by 700
-            offset = 1500 * p / realPoints
-            setTimeout(((p2) => ( () => 
-              data.score.points = p2
-              @recentUserData(data) ) )(p),offset)
-          setTimeout((() => 
-            data.score.points = realPoints
-            @recentUserData(data)),1501)
+
+          if @displayedUser != @prevUser
+            @prevUser = @displayedUser
+            realPoints = data.score.points
+            data.score.points = 0
+            for p in [0 .. realPoints] by 700
+              offset = 1500 * p / realPoints
+              setTimeout(((p2) => ( () => 
+                data.score.points = p2
+                @recentUserData(data) ) )(p),offset)
+            setTimeout((() => 
+              data.score.points = realPoints
+              @recentUserData(data)),1501)
+
+
           @recentUserData(data)
       else
         @recentUserData(null)
@@ -61,6 +66,9 @@ onScan = (scanEvent) ->
     return model.recentUserData(null) 
     
   model.displayedUser(scanEvent.user)
+
+
+   
 
 model = new Model()
 

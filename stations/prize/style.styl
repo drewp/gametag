@@ -2,7 +2,7 @@ html
   background: hsl(0, 0%, 9%)
 
 body
-  width: 2530px
+  width: 2560px
   height: 1600px
   font-size: 36px
   background: black
@@ -14,9 +14,8 @@ h2
   margin-bottom: 20px
 
 .gamesPlayed table
-  font-size: 30px
-  width: 95%
-  margin: 20px
+  font-size: 25px
+  width: 100%
 
   tr:nth-child(even)
     background: hsl(240, 100%, 15%)
@@ -32,7 +31,7 @@ h2
     
 .pointsBar
   width: 250px
-  height: 750px
+  height: 725px
   margin: 0 45px
   position: relative
   border: 2px solid white
@@ -46,7 +45,7 @@ h2
     text-align: center;
     bottom: 10px;
     z-index: 1;
-    color: hsl(0, 0%, 0%);
+    color: white
     
   .bar
     background: hsl(39, 100%, 50%);
@@ -63,16 +62,12 @@ h2
   color: white
   
 .rankPrizes
-  width: 570px
   tr.alreadyAchieved td.label
     text-decoration: line-through
     color: gray
   tr.isCurrent td.label span
     display: inline-block;
-    //border: 1px solid hsl(60, 100%, 50%);
-    //border-radius: 10px;
     padding: 7px;
-    //background: hsl(60, 41%, 29%);
     
   tr.notAchieved td.label
     color: hsl(0, 0%, 22%)
@@ -88,33 +83,56 @@ h2
     content: "Not enough points"
   
     
-.scanArea, .gamesPlayed, .pointGraphs, .rankPrizes, .catalog, .pointsAvail
+.scanArea, .scanDiv, .gamesPlayed, .pointGraphs, .rankPrizes, .catalog, .pointsAvail
   border: 10px solid white
   display: inline-block
   vertical-align: top
   margin: 20px
-  padding: 10px
+  padding: 25px
 
 .scanArea
-  height: 920px
-  width: 570px
-  border: 10px solid hsl(39, 100%, 50%)
+  overflow: visible
+  background: none
+  box-shadow: none
+  border: none
+  -webkit-transform scale(2.1)
+  margin-left: 135px
+  margin-top: 190px
+
+  h2
+    font-size: 36px
+
+.scanDiv
+  height: 810px
+  width: 500px
   background: hsl(240, 100%, 15%)
+  border: 10px solid hsl(39, 100%, 50%)
+  border-radius: 90px
 
 .pointGraphs
-  height: 920px
+  height: 810px
   width: 700px
+  border-top-left-radius: 90px
+  border-bottom-right-radius: 90px
 
 .gamesPlayed
-  width: 1010px
-  height: 920px
+  width: 1000px
+  height: 810px
+  border-top-left-radius: 90px
+  border-bottom-right-radius: 90px
 
 .rankPrizes
-  height: 410px
+  width: 500px
+  height: 390px
+  border-top-left-radius: 90px
+  border-bottom-right-radius: 90px
+  font-size: 34px
 
 .pointsAvail
   width: 700px
-  height: 410px
+  height: 390px
+  border-bottom-right-radius: 90px
+  border-top-left-radius: 90px
 
 .pointsAvailCenter
   width: 700px
@@ -124,11 +142,10 @@ h2
   text-align: center
 
 .catalog
-  width: 940px
-  height: 410px
-  padding-right: 45px
-  padding-left: 45px
-
+  width: 1000px
+  height: 395px
+  border-bottom-right-radius: 90px
+  border-top-left-radius: 90px
 
 .catalog table
   width: 100%
@@ -153,6 +170,7 @@ h2
 .rankPrizes table
   width: 100%
   color: white
+  font-size: 90%
 
   tr:nth-child(even)
     background: hsl(240, 100%, 15%)
@@ -167,15 +185,8 @@ h2
   td
     padding: 7px 20px
 
-.scan
-  height: 100%
-  
 .scanArea img
   border: 5px solid white
-  width: 600px
+  border-top-left-radius: 45px
+  border-bottom-right-radius: 45px
 
-.rank
-  //background: none
-  color: hsl(39, 100%, 50%)
-  border: none
-  margin-bottom: 54px

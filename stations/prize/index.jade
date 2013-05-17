@@ -9,8 +9,8 @@ html
     link(rel='stylesheet', href='style.css')
   body
     h1 Prize
-
-    include ../../shared/scanwidget
+    div.scanDiv
+      include ../../shared/scanwidget
 
     // ko with: recentUserData
     div.gamesPlayed
@@ -25,7 +25,13 @@ html
       table
         tbody(data-bind="foreach: $root.gameReport")
           tr(data-bind="css: {played: played, unplayed: !played}")
-            td(data-bind="text: label")
+            td
+              span(data-bind="if: played")
+                i.icon-check 
+              span(data-bind="if: !played")
+                i.icon-check-empty 
+
+              span(data-bind="text: label")
             td(data-bind="text: played ? played : 'not played'")
     div.pointGraphs
       div(style="display: inline-block") 
@@ -53,7 +59,8 @@ html
                   span(data-bind="if: havePrize")
                     | Have prize
                   span(data-bind="if: !havePrize && rank != 'cadet'")
-                    | Prize available
+                    i.icon-trophy
+                    |  Prize available
 
     div.catalog
       h2 Prizes
@@ -75,7 +82,7 @@ html
           span(data-bind="text: $root.pointsToSpend")
 
     // /ko
-  
+    
     p#status
   
     script(src='../../3rdparty/jquery-1.9.1.min.js')
