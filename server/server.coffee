@@ -81,15 +81,14 @@ openMongo (games, gameByUri, events) ->
     e.postEvent(body, (ev) -> res.json(200, ev))
 
   app.get "/", (req, res) ->
-    games.find().sort({label: 1}).toArray (err, results) ->
-      return res.send(500) if err?
-      for g in results
-        g.uri = "/stations/game/"+g._id+"/"
-        g.gameOp = "/stations/gameop/"+g._id+"/"
-      res.render("stations/proto/index.jade", {
-        title: "gametag proto page",
-        games: results
-      })
+    results = _.sortBy(_.values(gameByUri), (g) -> g.label)
+    for g in results
+      g.uri = "/stations/game/"+g._id+"/"
+      g.gameOp = "/stations/gameop/"+g._id+"/"
+    res.render("stations/proto/index.jade", {
+      title: "gametag proto page",
+      games: results
+    })
   app.get "/page.js", (req, res) -> respondFile(res, 'stations/proto/', 'page.js')
 
   app.get "/users", (req, res) ->
