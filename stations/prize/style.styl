@@ -9,9 +9,12 @@ body
   overflow: hidden
 
 h2
+  font-family: orbitron
+  text-shadow: 1px 2px 1px hsl(39, 100%, 50%)
   font-size: 48px
   margin-top: 0px
   margin-bottom: 20px
+  margin-left: 20px
 
 .gamesPlayed table
   font-size: 25px
@@ -81,7 +84,6 @@ h2
     text-decoration: line-through
   .permission:after
     content: "Not enough points"
-  
     
 .scanArea, .scanDiv, .gamesPlayed, .pointGraphs, .rankPrizes, .catalog, .pointsAvail
   border: 10px solid white
@@ -89,6 +91,7 @@ h2
   vertical-align: top
   margin: 20px
   padding: 25px
+  background: rgba(0, 0, 0, 0.75)
 
 .scanArea
   overflow: visible
@@ -98,9 +101,14 @@ h2
   -webkit-transform scale(2.1)
   margin-left: 135px
   margin-top: 190px
+  color: white
+  text-shadow: 1px 2px 1px hsl(39, 100%, 50%)
 
   h2
     font-size: 36px
+
+  .need
+    text-shadow: 1px 2px 2px white
 
 .scanDiv
   height: 810px
