@@ -20,7 +20,7 @@ class Model
       ret = []
       for prize in window.prizes
         ret.push({
-          label: "Give "+prize.label+" "+prize.points+" point prize"
+          label: "Buy "+prize.label+" "+prize.points+" point prize"
           points: -prize.points
           enable: pointsToSpend >= prize.points
           whyNot: "not enough points"
@@ -41,17 +41,28 @@ class Model
         if r.havePrize
           _.extend(row, {enable: false, whyNot: "already have prize"})
         ret.push(row)
+
+      for denom in [50, 100, 500, 1000, 5000]
+        ret.push({
+          label: "add "+denom+" points from casino"
+          enable: true
+          game: "https://gametag.bigast.com/games/casino" 
+          won: {label: "Won "+denom+" casino chips", points: denom}
+        }) 
       ret
-            
+
   buy: (ach, uiEvent) =>
-    ev = {
-      type: "buy"
-      user: @currentScan().user
-    }
-    if ach.rankPrize?
-      ev.rankPrize = ach.rankPrize
-    if ach.points?
-      ev.points = ach.points
+    if ach.won?
+      ev = {type: "achievement", game: ach.game, won: ach.won}
+    else
+      ev = {
+        type: "buy"
+      }
+      if ach.rankPrize?
+        ev.rankPrize = ach.rankPrize
+      if ach.points?
+        ev.points = ach.points
+    ev.user = @currentScan().user 
     
     operatorconsole.postButton(uiEvent, "../../events", ev)
 
