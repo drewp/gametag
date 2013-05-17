@@ -9,6 +9,7 @@ exports.userView = (events, gameByUri, uri, res) ->
     else if not userDoc?
       res.send(404)
     else
+      pointScale = if (userDoc.ageCategory || '?') == "adult" then 0 else 1
       eventDesc = (ev) ->
         desc = (switch ev.type
           when "scan"
@@ -16,7 +17,7 @@ exports.userView = (events, gameByUri, uri, res) ->
             if not g?
               "Played an unknown game"
             else
-              "Played "+g.label+" and got "+(g.pointsForPlaying || 0)+" points"
+              "Played "+g.label+" and got "+((g.pointsForPlaying * pointScale) || 0)+" points"
           when "achievement"
             ev.won.label+ " and won "+points.summarizeWin(ev.won)
         )

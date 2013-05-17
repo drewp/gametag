@@ -11,6 +11,7 @@ exports.getAllUsers = (events, gameByUri, cb) ->
                   computeScore(events, gameByUri, enrollEvent.user, enrollEvent.ageCategory || "high", {}, (err, score) ->
                     cb2(err) if err?
                     enrollEvent.score = score
+                    addGenericPic(enrollEvent)
                     cb2(null, enrollEvent)
                   )
                  ),
@@ -30,10 +31,15 @@ exports.findOneUser = (events, gameByUri, uri, cb, opts) ->
       computeScore(events, gameByUri, uri, doc.ageCategory || "high", opts, (err, score) ->
         cb(err) if err?
         doc.score = score
+        addGenericPic(doc)
         cb(null, doc)
       )
     )
 
+addGenericPic = (userDoc) ->
+  # if 'pic' is missing, add generic
+  if not userDoc.pic?
+    userDoc.pic = "/pic/generic1.jpg"
 
 computeScore = (events, gameByUri, user, ageCategory, opts, cb) ->
   events.find({
@@ -44,6 +50,7 @@ computeScore = (events, gameByUri, user, ageCategory, opts, cb) ->
     {sort: {t:1}}
     ).toArray((err, evs) ->
       score = {points: 0, games: 0, absSpentPoints: 0, perGame: {}, rank: []}
+      pointScale = if ageCategory == "adult" then 0 else 1
       if opts.allEvents
         score.events = []
       lastScannedGame = null
@@ -64,14 +71,14 @@ computeScore = (events, gameByUri, user, ageCategory, opts, cb) ->
             if not g?
               console.log("unknown game in scoring: "+ev.game)
             else
-              score.points += g.pointsForPlaying
+              score.points += g.pointsForPlaying * pointScale
               score.games += 1
               score.perGame[ev.game] = (score.perGame[ev.game] || 0) + 1
               lastScannedGame = ev.game
             if opts.allEvents
               score.events.push(ev)
           when "achievement"
-            score.points += ev.won.points if ev.won.points?
+            score.points += (ev.won.points * pointScale) if ev.won.points?
             if opts.allEvents
               score.events.push(ev)
           when "buy"
@@ -109,6 +116,8 @@ rankResult = (boughtRankPrizes, currentRank) ->
   }
     
 computeRank = (points, perGame, ageCategory) ->
+  if ageCategory == "adult"
+    return "civilian"
   distinctGames = gameCount(perGame, 1)
   totalGames = gameCount(perGame, 999)
   switch ageCategory

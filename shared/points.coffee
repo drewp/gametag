@@ -1,11 +1,11 @@
-summarizeWin = (ach) ->
+summarizeWin = (ach, pointScale) ->
   ret = ""
   if ach.desc?
     ret += ach.desc
   if ach.points?
     if ret != ""
       ret += " and "
-    ret += ""+ach.points+" points"
+    ret += ""+(ach.points * pointScale)+" points"
   ret
 
 if window?

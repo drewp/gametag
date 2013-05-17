@@ -26,7 +26,8 @@ html
           span(data-bind="text: label")
           |  &#8594;
           | win 
-          span.summary(data-bind="text: $root.summarizeWin($data)")
+          # the pointScale=1 is wrong, but it only leads to wrong display on this page
+          span.summary(data-bind="text: $root.summarizeWin($data, 1)")
   
           div(data-bind="if: $root.currentUserData")
             button(data-bind="click: $root.award")

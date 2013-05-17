@@ -50,7 +50,8 @@ class NewScoreEvents
       when "scan"
         ["Points for playing", thisGameData?.pointsForPlaying]
       when "achievement"
-        ["Got "+ev.won.label, summarizeWin(ev.won)]
+        # pointScale=1 is wrong; computeScore will get it right, later
+        ["Got "+ev.won.label, summarizeWin(ev.won, 1)]
     ev
 
   _eventsSinceLastScan: (allEvents) =>
