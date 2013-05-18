@@ -35,7 +35,7 @@ exports.printSvgBody = (inputStream, destinationPrinter, cb) ->
 
     cmdline = ("inkscape " +
                "--export-pdf=" + base + ".pdf "+
-               "--export-dpi=300 " + base + ".svg")
+               "--export-dpi=75 " + base + ".svg")
     onExec = ((err, stdout, stderr) ->
       console.log("inkscape done: ", err)
       if err?
