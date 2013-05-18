@@ -13,15 +13,16 @@ html
         span.created(data-bind="text: t")
         | 
         a(data-bind="text: 'Name: '+label, attr: {href: user}, click: $root.fillBadge")
-    
-    div#badge
 
-    button(data-bind="click: print") Print this badge
-    p(data-bind="text: printResult")
-    p
-      | Printing sends to a print class named 'photopaper'. See the 
-      a(href="http://localhost:631/jobs") cups job list
-      |  (host may be wrong)
+    div(style="position: fixed; left: 500px; top: 100px")    
+      div#badge
+
+      button(data-bind="click: print") Print this badge
+      p(data-bind="text: printResult")
+      p
+        | Printing sends to a print class named 'photopaper'. See the 
+        a(href="http://localhost:631/jobs") cups job list
+        |  (host may be wrong)
 
     
     #status
