@@ -24,6 +24,7 @@ server/server.js: server/sockets.js \
                   server/userview.js \
                   server/fileserve.js \
                   shared/identifiers.js \
+                  server/access.js  \
                   shared/points.js
 
 import_game_data_to_mongo:

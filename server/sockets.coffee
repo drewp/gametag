@@ -1,4 +1,5 @@
 io = require('socket.io')
+isAdmin = require("./access.js").isAdmin
 
 exports.Sockets = class Sockets
   # one-way websocket for sending events back out to the
@@ -11,32 +12,14 @@ exports.Sockets = class Sockets
 
     @io = io.listen(server)
     @io.set('log level', 1)
+    @io.set('authorization', (handshakeData, callback) =>
+      if not isAdmin()
+        callback(new Error("forbidden"));
+    )
 
     @io.sockets.on('connection', (socket) =>
       console.log("new sock connection " + socket.id)
       @connectedSockets[socket.id] = socket
-    )
-
-    return 
-        
-    @wsServer = new WebSocketServer({
-      httpServer: server,
-      autoAcceptConnections: false
-    })
-
-    @wsServer.on('request', (request) =>
-      if request.resource != path
-        return request.reject("unknown WS path")
-      
-      console.log("websocket: accepting connection from", request.origin)
-      connection = request.accept(null, request.origin)
-      connection.id = maxId++
-      @connectedSockets[connection.id] = connection
-
-      connection.on("close", (reasonCode, description) =>
-        delete @connectedSockets[connection.id]
-        console.log("websocket: close from", connection.remoteAddress)
-      )
     )
 
   sendToAll: (msg) =>

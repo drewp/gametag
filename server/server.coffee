@@ -18,6 +18,7 @@ usersMod     = require("./users.js")
 [getAllUsers, findOneUser] = [usersMod.getAllUsers, usersMod.findOneUser]
 respondFile  = require("./fileserve.js").respondFile
 userView     = require("./userview.js").userView
+mustBeAdmin  = require("./access.js").mustBeAdmin
 
 app.engine("jade", build.jade)
 app.engine("styl", build.stylus)
@@ -61,22 +62,26 @@ openMongo (games, gameByUri, events) ->
   e.syncPicEvents()
 
   app.delete "/events/:id", (req, res) ->
+    mustBeAdmin(req, res)
     e.cancelEvent(identifiers.absolute(req.url), (err) ->
       return res.send(500) if err?
       res.send(204)
     )
     
   app.patch "/events/:id", (req, res) ->
+    mustBeAdmin(req, res)
     e.patchEvent(identifiers.absolute(req.url), req.body, (err) ->
       return res.send(500) if err?
       res.send(204)
     )
 
   app.get "/events/all", (req, res) ->
+    mustBeAdmin(req, res)
     # newest first
     e.getAllEvents((events) -> res.json(200, {events: events}))
     
   app.post "/events", (req, res) ->
+    mustBeAdmin(req, res)
     body = req.body
     e.postEvent(body, (ev) -> res.json(200, ev))
 
@@ -92,6 +97,7 @@ openMongo (games, gameByUri, events) ->
   app.get "/page.js", (req, res) -> respondFile(res, 'stations/proto/', 'page.js')
 
   app.get "/users", (req, res) ->
+    mustBeAdmin(req, res)
     getAllUsers(events, gameByUri, (err, users) ->
       throw err if err?
       res.json(200, {users: users})
@@ -128,15 +134,18 @@ openMongo (games, gameByUri, events) ->
     })
 
   app.get "/games", (req, res) ->
+    mustBeAdmin(req, res)
     res.json(200, {games: gameByUri})
 
   app.get "/games/qr", (req, res) ->
+    mustBeAdmin(req, res)
     res.render("stations/proto/gamesqr.jade",
                {games: _.extend(
                 {"prize":{uri: "https://gametag.bigast.com/stations/prize"}},
                 gameByUri)})
     
   app.get "/games/:g", (req, res) ->
+    mustBeAdmin(req, res)
     r = identifiers.absolute(req.url)
     res.json(200, gameByUri[r])
 
@@ -145,6 +154,7 @@ openMongo (games, gameByUri, events) ->
     events.find({type: "enroll"}).count(cb)
 
   app.post "/users", (req, res) ->
+    mustBeAdmin(req, res)
     newId = randomId(6)
     e.newEvent("enroll",
              {
@@ -162,9 +172,11 @@ openMongo (games, gameByUri, events) ->
   # GET /users/:id is what guests will revisit from their own badges later
 
   app.post "/picRescan", (req, res) ->
+    mustBeAdmin(req, res)
     e.syncPicEvents(() -> res.json(200, {}))
   
   app.post "/scans", (req, res) ->
+    mustBeAdmin(req, res)
     e.newEvent("scan", {user: req.body.qr, game: req.body.game}, (err, doc) ->
       throw err if err
       res.json(200, doc)
@@ -173,6 +185,7 @@ openMongo (games, gameByUri, events) ->
   app.post "/pic", (req, res) ->
     # POST a jpeg image and get back a copy of the event that
     # announces your new pic.
+    mustBeAdmin(req, res)
     writeFilename = "pic/" + randomId(12) + ".jpg"
     out = fs.createWriteStream(writeFilename)
     req.pipe(out)
@@ -187,6 +200,7 @@ openMongo (games, gameByUri, events) ->
     respondFile(res, "./pic/", req.params.f)
 
   app.post "/print", (req, res) ->
+    mustBeAdmin(req, res)
     printSvgBody(req, "photopaper", (err, jobName) ->
       if err?
         e.newEvent("printError", {error: err}, (err, ev) -> res.json(500, ev))
